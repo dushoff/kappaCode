@@ -23,7 +23,7 @@ fancyHist <- (deadDat
 )
 print(fancyHist 
 	|> densHist(colorVar = "distParms"
-		, colorVals = c(1.5, 8) , colorLab = "R_0" , groupVar = "distr"
+		, colorVals = betaList, colorLab = "R_0" , groupVar = "distr"
 	)
 )
 

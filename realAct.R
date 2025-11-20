@@ -7,14 +7,14 @@ library(dplyr)
 library(purrr)
 
 # parms
-beta <- c(1.5, 8)    # extend as needed
+betaList <- c(1.5, 3, 8)    # extend as needed
 gamm <- 1
 
 # slices
 n <- 300
 xmax <- 30.5
 
-act <- beta / gamm
+act <- betaList / gamm
 
 actDist <- function(low = 0, high = 30, n = n, act, label){
     x <- seq(low, high, length.out = n)
