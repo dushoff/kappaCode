@@ -15,16 +15,17 @@ vim_session:
 
 Sources += $(wildcard *.R)
 
+## Lloyd-Smith curves (first part of linearized figure)
+## This is a bad name; maybe it was intended for the second part?
 lsCurves.Rout: lsCurves.R realAct.rda
 	$(pipeR)
 
+## Realized activity 
 realAct.Rout: realAct.R funs.rda
 	$(pipeR)
 
+## Some helper functions
 funs.Rout: funs.R
-	$(pipeR)
-
-densHist.Rout: densHist.R
 	$(pipeR)
 
 ######################################################################
