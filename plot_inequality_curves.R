@@ -7,7 +7,7 @@ loadEnvironments()
 startGraphics(height = 6, width = 9)
 
 
-#from spreadHelpers 
+#from spreadHelpers r
 makeP <- function(rate){rate/(1+rate)}
 
 # parms
