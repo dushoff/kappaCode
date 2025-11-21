@@ -2,13 +2,13 @@
 library(shellpipes)
 rpcall("densHist.Rout densHist.R")
 densHist <- function(.data
-                     , xlab = "cases per case"
-                     , ylab = "density"
-                     , colorVar = "distParms"
-                     , colorVals = NULL
-                     , colorLab = NULL
-                     , groupVar = NULL
-                     , clearFill = FALSE
+	, xlab = "cases per case"
+	, ylab = "density"
+	, colorVar = "distParms"
+	, colorVals = NULL
+	, colorLab = NULL
+	, groupVar = NULL
+	, clearFill = FALSE
 ){
   if(is.null(colorLab)){colorLab <- colorVar}
   p <- ggplot(.data, aes(x = x

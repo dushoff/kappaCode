@@ -7,33 +7,28 @@ current: target
 Ignore = target.mk
 
 vim_session:
-	bash -cl "vmt"
+	bash -cl "vmt todo.md"
 
 ## -include makestuff/perl.def
 
 ######################################################################
 
-Sources += $(wildcard *.R)
+Sources += $(wildcard *.R *.md)
 
-## Lloyd-Smith curves (first part of linearized figure)
-## This is a bad name; maybe it was intended for the second part?
-lsCurves.Rout: lsCurves.R realAct.rda
-	$(pipeR)
+autopipeR = defined
+
+## Lloyd-Smith curves linearized figure
+lsDensity.Rout: lsDensity.R realAct.rda
+lsCurves.Rout: lsCurves.R densHist.rda funs.rda
+
+plot_inequality_curves.R.1.prevfile:
 
 ## Realized activity 
 realAct.Rout: realAct.R funs.rda
-	$(pipeR)
 
-##plotting inequality curves
-plot_inequality_curves.Rout: plot_inequality_curves.R densHist.rda
-	$(pipeR)
 
 ## Some helper functions
 funs.Rout: funs.R
-	$(pipeR)
-
-%.Rout: %.R
-	$(pipeR)
 
 ######################################################################
 

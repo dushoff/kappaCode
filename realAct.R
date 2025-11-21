@@ -14,7 +14,7 @@ gamm <- 1
 n <- 300
 xmax <- 30.5
 
-act <- betaList / gamm
+act <- betaList/gamm
 
 actDist <- function(low = 0, high = 30, n = n, act, label){
     x <- seq(low, high, length.out = n)
@@ -49,17 +49,5 @@ deadDat <- bind_rows(
         , ~ secDist(high = xmax, act = act[.x], label = paste0("scnd_", .x))
     )
 )
-
-# Histograms
-n <- 2e4
-histDat <- data.frame(ind = 1:n) |>
-    bind_cols(
-        map(setNames(seq_along(act), paste0("activity_", seq_along(act)))
-            , ~ actHist(n, act[.x])
-        )
-        , map(setNames(seq_along(act), paste0("secondary_", seq_along(act)))
-            , ~ secHist(n, act[.x])
-        )
-    )
 
 saveEnvironment()
