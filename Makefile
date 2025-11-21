@@ -24,8 +24,15 @@ lsCurves.Rout: lsCurves.R realAct.rda
 realAct.Rout: realAct.R funs.rda
 	$(pipeR)
 
+##plotting inequality curves
+plot_inequality_curves.Rout: plot_inequality_curves.R densHist.rda
+	$(pipeR)
+
 ## Some helper functions
 funs.Rout: funs.R
+	$(pipeR)
+
+%.Rout: %.R
 	$(pipeR)
 
 ######################################################################
