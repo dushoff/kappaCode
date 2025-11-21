@@ -1,6 +1,3 @@
-## 2025 Nov 19 (Wed) Copied from overleaf/codes/plotPMF_PDF_ineq.R
-## ls for Lloyd-Smith
-
 library(shellpipes)
 library(ggplot2)
 library(dplyr)
@@ -9,22 +6,61 @@ library(patchwork)
 loadEnvironments()
 startGraphics(height = 6, width = 9)
 
-fancyHist <- (deadDat 
-	|> separate(distr
-		, into = c("distType", "distParms")
-		, sep = "_", remove = FALSE
-	)
-	# create a bar widths layer that has a narrower width at x = 0
-	|> mutate(barWidth = 0.5 + 0.5*(x>0))
-	# double the density for halved bar
-	|> mutate(d = if_else(distType == "scnd"
-		, if_else(x == 0, 2*d, d)
-	, d))
-)
-print(fancyHist 
-	|> densHist(colorVar = "distParms"
-		, colorVals = betaList, colorLab = "R_0" , groupVar = "distr"
-	)
+# parms
+beta1 <- 1.5
+beta2 <- 8
+gamm <- 1
+act1 <- beta1/gamm
+act2 <- beta2/gamm
+n  <- 100
+numBeta <- 2
+
+# creating secondary distribution for inequality plot using cumulative distribution
+list_df <- list()
+for (l in 1:numBeta) {
+  actd  <- get(paste0("act", l))
+  probS <- odds2prob(1 / actd)
+  meanP <- (1 - probS) / probS
+  for ( x in -1:n){
+    xs = -1:x
+    j  <- sum(xs * dgeom(x =xs, prob = probS))
+    val   <- 1 - j / meanP #fraction of cases due to those infecting more than x
+    frac  <- 1 - pgeom(x, prob = probS) #fraction of those infecting more than x
+    
+    list_df[[x+2]] <- data.frame(val = val,
+                                 frac = frac,
+                                 distType = "secondary",
+                                 distParms = as.character(l))
+  }
+  assign( paste0("df_",l),
+          do.call(rbind,list_df))
+}
+df<-do.call(rbind,(mget(paste0("df_",1:numBeta))))
+
+for (l in 1:numBeta) {
+  actd  <- get(paste0("act", l))
+  rate <- (1 / actd)
+  xvect <- seq(from=0, to=n, by = 0.01)
+  val   <- (1 + rate*xvect)* exp(-rate*xvect)
+  frac  <- exp(-rate*xvect)
+  df_exp <- 
+    data.frame(val = val,
+               frac = frac,
+               distType = "activity",
+               distParms = as.character(l))
+  
+}
+
+df<-rbind(df,df_exp)
+
+
+##### plotting section ####
+ineqDeadPlot <- df |> ineq()
+
+print(ineqDeadPlot 
+	## + theme(legend.position = "none"))
+	## + plot_annotation(tag_levels = 'a', tag_suffix = ") "
 )
 
+rdsSave(ineqDeadPlot)
 
