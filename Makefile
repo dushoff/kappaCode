@@ -20,7 +20,7 @@ autopipeR = defined
 ## Lloyd-Smith curves linearized figure
 lsDensity.Rout: lsDensity.R realAct.rda
 lsCurves.Rout: lsCurves.R params.rda funs.rda
-
+Fig2and3.Rout: Fig2and3.R
 plot_inequality_curves.R.1.prevfile:
 
 ## Realized activity 
@@ -31,12 +31,27 @@ slowtarget/stackbarSim.Rout: stackbarSim.R params.rda funs.rda
 	$(pipeR)
 stackbar.Rout: stackbar.R params.rda  slow/stackbarSim.rda
 
+
+## IBM for Histplot
+recFun.Rout: recFun.R
+finalSize.Rout: finalSize.R
+
+IBM_for_hist.Rout: IBM_for_hist.R funs.rda params.rda
+
+
+slowtarget/IBM_for_histSim.Rout: IBM_for_histSim.R IBM_for_hist.rda params.rda
+	$(pipeR)
+
+rcHist.Rout: slow/IBM_for_histSim.rda
+
+
 ## Evolution of variance over time
 slowtarget/RcTimePlotVaryingPeakSim.Rout: RcTimePlotVaryingPeakSim.R params.rda funs.rda
 	$(pipeR)
 
 slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R parmsVaryingEndTimePeakObs.rda funs.rda
 	$(pipeR)
+
 
 RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R slow/RcTimePlotVaryingPeakSim.rda
 RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R slow/RcTimePlotVaryingPeakObsSim.rda

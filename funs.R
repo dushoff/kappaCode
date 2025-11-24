@@ -12,6 +12,26 @@ makeDistData <- function(v){
 	return(data.frame(q, qp, cFIdeal, cFRealiz))
 }
 
+finalSize <- function(R0){
+  susFrac <- uniroot(function(x){R0*(x-1)/log(x)-1}
+                     , upper = 1-1e-12
+                     , lower =1e-12
+  )
+  return(1-as.numeric(susFrac[1]))
+  
+}
+recFun <- function(x, rPar = "exp"){
+  if(rPar == "exp"){
+    y <- rexp(x, rate = setGamma)
+  }
+  if(rPar == "const"){
+    y <- rep(setGamma, max(x))
+  }
+  if(rPar == "gamma3"){
+    y <- rgamma(max(x), rate = setGamma/3, shape = 3)
+  }
+  return(y)
+}
 ## HERE
 densHist <- function(.data
     , xlab = "cases per case"
@@ -279,11 +299,10 @@ v1ODE <- function(time, vars, parms){
 }
 
 peakAssigner<-function(R0){
-  SIRsim<-sim(B0=R0, finTime=50, timeStep=0.001,  y0 = 1e-9)
+  SIRsim<-sim(B0=R0, finTime=50, timeStep=0.0001,  y0 = 1e-9)
   idx<-which.min(abs(SIRsim$x - 1/R0))
   return(SIRsim[idx,"time"])
 }
-
 v1Stats_tpeak <- function(B0=1
                           , cohortProp=0.6
                           , steps=300
@@ -347,7 +366,40 @@ v1Stats_tpeak <- function(B0=1
     )
     ))
   })}
+cCalc_obs <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
+  Bcohort<-B0
+  Ri <- Bcohort*sfun(cohort)
+  sTime <- time[time>=cohort & time<stopTime]
+  mom <- cMoments(sTime, sfun, T0=cohort, cars=cars, 
+                  B0=B0)
+  with(mom[nrow(mom), ], {
+    Rctot=Rctot/cumden
+    RcSS=RcSS/cumden
+    return(list(
+      cohort=cohort, Ri = Ri, Rc=Rctot, varRc=(RcSS-Rctot^2)
+      , RcSS =RcSS,
+      , cumden=cumden
+    ))
+  })
+}
 
+cohortStats_obs <- function(B0 = 1
+                            , sdat = NULL
+                            , maxCohort = NULL
+                            , dfun = boxcar
+                            , cars = 1
+                            , stopTime = NULL
+                            , ...){
+  sfun <- approxfun(sdat$time, sdat$x, rule=2)
+  cohorts <- with(sdat, time[time<=maxCohort])
+  return(as.data.frame(t(
+    sapply(cohorts, function(c) cCalc_obs(sdat$time, cohort=c, sfun=sfun, tol=1e-4,
+                                          cars=cars,
+                                          #  stopTime = stopTime,
+                                          B0 = B0
+    ))
+  )))
+}
 v1Stats_tpeak_obs <- function(B0=1
                               , steps=300
                               , dfun = boxcar
@@ -406,5 +458,22 @@ v1Stats_tpeak_obs <- function(B0=1
       ))
     })
   })}
+
+v1ODE_obs<-function (time, vars, parms) 
+{
+  inc <- parms$ifun(time)
+  Rc <- parms$rcfun(time)
+  varRc <- parms$varrcfun(time)
+  wss <- parms$wssfun(time)
+  cohortFrac <- parms$cohortFracFun(time)
+  return(list(c(inc,
+                inc * cohortFrac,
+                inc * cohortFrac *  Rc,
+                inc * cohortFrac * Rc * Rc,
+                inc * cohortFrac * varRc, 
+                inc * cohortFrac * wss,
+                inc * cohortFrac * (wss - Rc^2)
+  )))
+}
 
 saveEnvironment()

@@ -5,10 +5,10 @@ library(shellpipes)
 
 loadEnvironments()
 
-startGraphics(width=7, height=5)
+startGraphics(width=2, height=3)
 
 
-plotFile <- (cohorts
+stackBarplot <- (cohorts
              |> pivot_longer(cols = c(between, within)
                              , names_to = "source"
                              , values_to = "RcVariance")
@@ -22,5 +22,6 @@ plotFile <- (cohorts
              + theme(axis.title.y = element_text(size = legendFontSize)
              ))
 
-print(plotFile)
+print(stackBarplot)
 
+rdsSave(stackBarplot)
