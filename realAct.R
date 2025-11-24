@@ -2,19 +2,15 @@
 # copied from overleaf/codes/deadSimple.R 2025 Nov 19 (Wed)
 library(shellpipes)
 loadEnvironments()
-startGraphics()
 library(dplyr)
 library(purrr)
 
-# parms
-betaList <- c(1.5, 3, 8)    # extend as needed
-gamm <- 1
+
 
 # slices
 n <- 300
 xmax <- 30.5
 
-act <- betaList/gamm
 
 actDist <- function(low = 0, high = 30, n = n, act, label){
     x <- seq(low, high, length.out = n)

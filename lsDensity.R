@@ -21,7 +21,7 @@ fancyHist <- (deadDat
 		, if_else(x == 0, 2*d, d)
 	, d))
 	|> densHist(colorVar = "distParms"
-		, colorVals = betaList, colorLab = "R_0" , groupVar = "distr"
+		, colorVals = betaList, colorLab = bquote(R[0]) , groupVar = "distr"
 	)
 )
 

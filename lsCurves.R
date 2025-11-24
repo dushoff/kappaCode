@@ -6,19 +6,13 @@ library(patchwork)
 loadEnvironments()
 startGraphics(height = 6, width = 9)
 
-# parms
-beta1 <- 1.5
-beta2 <- 8
-gamm <- 1
-act1 <- beta1/gamm
-act2 <- beta2/gamm
-n  <- 100
-numBeta <- 2
 
-# creating secondary distribution for inequality plot using cumulative distribution
+n  <- 100
 list_df <- list()
+
 for (l in 1:numBeta) {
-  actd  <- get(paste0("act", l))
+  # creating secondary distribution for inequality plot using cumulative distribution
+  actd  <- act[l]
   probS <- odds2prob(1 / actd)
   meanP <- (1 - probS) / probS
   for ( x in -1:n){
@@ -34,24 +28,20 @@ for (l in 1:numBeta) {
   }
   assign( paste0("df_",l),
           do.call(rbind,list_df))
-}
-df<-do.call(rbind,(mget(paste0("df_",1:numBeta))))
-
-for (l in 1:numBeta) {
-  actd  <- get(paste0("act", l))
+  # creating activity distribution for inequality plot using cumulative distribution
   rate <- (1 / actd)
   xvect <- seq(from=0, to=n, by = 0.01)
-  val   <- (1 + rate*xvect)* exp(-rate*xvect)
-  frac  <- exp(-rate*xvect)
+  val_exp   <- (1 + rate*xvect)* exp(-rate*xvect)
+  frac_exp  <- exp(-rate*xvect)
   df_exp <- 
-    data.frame(val = val,
-               frac = frac,
+    data.frame(val = val_exp,
+               frac = frac_exp,
                distType = "activity",
                distParms = as.character(l))
-  
 }
-
+df<-do.call(rbind,(mget(paste0("df_",1:numBeta))))
 df<-rbind(df,df_exp)
+
 
 
 ##### plotting section ####

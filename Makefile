@@ -14,22 +14,38 @@ vim_session:
 ######################################################################
 
 Sources += $(wildcard *.R *.md)
-
+Sources += $(wildcard slow/*)
 autopipeR = defined
 
 ## Lloyd-Smith curves linearized figure
 lsDensity.Rout: lsDensity.R realAct.rda
-lsCurves.Rout: lsCurves.R densHist.rda funs.rda
+lsCurves.Rout: lsCurves.R params.rda funs.rda
 
 plot_inequality_curves.R.1.prevfile:
 
 ## Realized activity 
-realAct.Rout: realAct.R funs.rda
+realAct.Rout: realAct.R params.rda funs.rda
 
+## Stack bar
+slowtarget/stackbarSim.Rout: stackbarSim.R params.rda funs.rda
+	$(pipeR)
+stackbar.Rout: stackbar.R params.rda  slow/stackbarSim.rda
+
+## Evolution of variance over time
+slowtarget/RcTimePlotVaryingPeakSim.Rout: RcTimePlotVaryingPeakSim.R params.rda funs.rda
+	$(pipeR)
+
+slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R parmsVaryingEndTimePeakObs.rda funs.rda
+	$(pipeR)
+
+RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R slow/RcTimePlotVaryingPeakSim.rda
+RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R slow/RcTimePlotVaryingPeakObsSim.rda
 
 ## Some helper functions
 funs.Rout: funs.R
 
+## Setting parameters
+params.Rout: params.R
 ######################################################################
 
 ### Makestuff
@@ -51,6 +67,6 @@ makestuff:
 -include makestuff/os.mk
 
 -include makestuff/pipeR.mk
-
+-include makestuff/slowtarget.mk
 -include makestuff/git.mk
 -include makestuff/visual.mk
