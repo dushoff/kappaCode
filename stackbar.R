@@ -5,7 +5,7 @@ library(shellpipes)
 
 loadEnvironments()
 
-startGraphics(width=2, height=3)
+startGraphics(width=4, height=3)
 
 
 stackBarplot <- (cohorts
