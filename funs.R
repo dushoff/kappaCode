@@ -94,12 +94,15 @@ densHist <- function(.data
               , legend.title = element_text(size = legendTitleFontSize)
               , legend.text  = element_text(size = legendFontSize))
     if(!clearFill){
-        p <- p + geom_bar(aes(alpha = 0.5 * as.numeric(distType != "act")
-                              , width = barWidth, group = get(eval(groupVar)))
-            , stat = "identity"
-            , position = "identity"
-            , color = scales::alpha("white", alpha = 0)
-            # , key_glyph = "point"
+        p <- p + geom_bar(
+		  		aes(alpha = 0.5 * as.numeric(distType != "act")
+					, width = barWidth
+					, group = get(eval(groupVar))
+				)
+				, stat = "identity"
+				, position = "identity"
+				, color = scales::alpha("white", alpha = 0)
+				# , key_glyph = "point"
         )
     }
     return(p)

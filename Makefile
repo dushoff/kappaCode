@@ -18,9 +18,10 @@ Sources += $(wildcard slow/*)
 autopipeR = defined
 
 ## Lloyd-Smith curves linearized figure
+## lsDensity.Rout: lsDensity.R lsDensity.Rlog
 lsDensity.Rout: lsDensity.R realAct.rda
 lsCurves.Rout: lsCurves.R params.rda funs.rda
-Fig2and3.Rout: Fig2and3.R
+
 plot_inequality_curves.R.1.prevfile:
 
 ## Realized activity 
