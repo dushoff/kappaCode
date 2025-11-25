@@ -1,9 +1,13 @@
 library(dplyr)
 library(tidyr)
-library(ggplot2); theme_set(theme_bw())
 library(shellpipes)
-
 loadEnvironments()
+library(ggplot2); theme_set(theme_bw()+ theme(
+                            axis.title.x = element_text(size = xlabelFontSize)
+                            , axis.title.y = element_text(size = ylabelFontSize)
+                            , legend.title = element_text(size = legendTitleFontSize)
+                            , legend.text  = element_text(size = legendFontSize)))
+
 
 startGraphics(width=4, height=3)
 
@@ -20,8 +24,7 @@ stackBarplot <- (cohorts
                         , width = 0.25)
              + ylab("Variance in cases per case") 
              + xlab(bquote(R[0]))
-             + theme(axis.title.y = element_text(size = legendFontSize)
-             ))
+             )
 
 print(stackBarplot)
 

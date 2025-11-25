@@ -34,8 +34,8 @@ recFun <- function(x, rPar = "exp"){
 }
 ## HERE
 densHist <- function(.data
-    , xlab = "cases per case"
-    , ylab = "density"
+    , xlab = "Cases per case"
+    , ylab = "Density"
     , colorVar = "distParms"
     , colorVals = NULL
     , colorLab = NULL
@@ -61,7 +61,7 @@ densHist <- function(.data
     scale_alpha_identity(breaks = c(0,1)
         # , range = c(0,1)
         , labels = c("expected infectiousness", "secondary case")
-        , guide = guide_legend(title = "distribution type"
+        , guide = guide_legend(title = "Distribution type"
             , order = 2
             , override.aes = list(
                 linewidth = 0.5
@@ -123,9 +123,9 @@ ineq <- function(dat, colorVar = bquote(R[0])
     scale_color_brewer(palette = "Dark2", name = colorVar
                        , labels = colorVals
                        , guide = "none") +
-    labs(x = "fraction of infectors (ranked)"
-        , y = "\ncumulative fraction of new infections"
-        , linetype = "distribution type"
+    labs(x = "Fraction of infectors (ranked)"
+        , y = "\nCumulative fraction of new infections"
+        , linetype = "Distribution type"
     ) + theme(legend.position = c(xpos, ypos)
               , legend.justification = c("right", "bottom")
               , legend.title = element_text(size = legendTitleFontSize)
@@ -381,7 +381,7 @@ cCalc_obs <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
     RcSS=RcSS/cumden
     return(list(
       cohort=cohort, Ri = Ri, Rc=Rctot, varRc=(RcSS-Rctot^2)
-      , RcSS =RcSS,
+      , RcSS =RcSS
       , cumden=cumden
     ))
   })
@@ -399,7 +399,7 @@ cohortStats_obs <- function(B0 = 1
   return(as.data.frame(t(
     sapply(cohorts, function(c) cCalc_obs(sdat$time, cohort=c, sfun=sfun, tol=1e-4,
                                           cars=cars,
-                                          #  stopTime = stopTime,
+                                           stopTime = stopTime,
                                           B0 = B0
     ))
   )))

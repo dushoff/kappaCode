@@ -1,9 +1,13 @@
 library(shellpipes)
 library(dplyr)
-library(ggplot2); theme_set(theme_bw())
+loadEnvironments()
+library(ggplot2); theme_set(theme_bw()
+                            + theme(
+                            axis.title.x = element_text(size = xlabelFontSize)
+                            , axis.title.y = element_text(size = ylabelFontSize))
+)
 
 startGraphics(height=3) 
-loadEnvironments()
 
 label_wrap <- function(wrap_level) {
   sapply(wrap_level,function(x){

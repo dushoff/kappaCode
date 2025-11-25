@@ -34,8 +34,6 @@ stackbar.Rout: stackbar.R params.rda  slow/stackbarSim.rda
 
 
 ## IBM for Histplot
-recFun.Rout: recFun.R
-finalSize.Rout: finalSize.R
 
 IBM_for_hist.Rout: IBM_for_hist.R funs.rda params.rda
 
@@ -43,19 +41,19 @@ IBM_for_hist.Rout: IBM_for_hist.R funs.rda params.rda
 slowtarget/IBM_for_histSim.Rout: IBM_for_histSim.R IBM_for_hist.rda params.rda
 	$(pipeR)
 
-rcHist.Rout: slow/IBM_for_histSim.rda
+rcHist.Rout: slow/IBM_for_histSim.rda params.rda
 
 
 ## Evolution of variance over time
 slowtarget/RcTimePlotVaryingPeakSim.Rout: RcTimePlotVaryingPeakSim.R params.rda funs.rda
 	$(pipeR)
 
-slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R parmsVaryingEndTimePeakObs.rda funs.rda
+slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R params.rda funs.rda
 	$(pipeR)
 
 
-RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R slow/RcTimePlotVaryingPeakSim.rda
-RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R slow/RcTimePlotVaryingPeakObsSim.rda
+RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R slow/RcTimePlotVaryingPeakSim.rda params.rda
+RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R slow/RcTimePlotVaryingPeakObsSim.rda params.rda
 
 ## Some helper functions
 funs.Rout: funs.R

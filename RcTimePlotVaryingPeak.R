@@ -1,16 +1,17 @@
+library(shellpipes)
+loadEnvironments()
 library(ggplot2); theme_set(theme_bw() + theme(
   plot.background = element_blank(),
   panel.grid = element_blank(),
+  axis.title.x = element_text(size = xlabelFontSize),
+  axis.title.y = element_text(size = ylabelFontSize)
 ) )
 library(dplyr)
 library(patchwork)
 library(tidyr)
 library(deSolve)
 library(purrr)
-library(shellpipes)
 
-
-loadEnvironments()
 startGraphics(width=10, height=5)
 update_geom_defaults("line", list(
   linewidth = 1     
@@ -43,9 +44,7 @@ mu_Rc <- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, muRc
           + geom_line() 
           + geom_hline(yintercept = 1)
           + geom_vline(xintercept = 1)
-        #  + scale_color_manual(values = colorVec)
           + guides(color = "none") 
-         # + xlim(c(0, max(cutoffTime))) 
           + labs(x = cohortXlabel
                  , y = bquote(mu)
                  , color = bquote(beta)))
@@ -57,9 +56,7 @@ var_Rc<- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, totalVRc
           + geom_line() 
           + geom_hline(yintercept = 1)
           + geom_vline(xintercept = 1)
-        #  + scale_color_manual(values = colorVec)
           + guides(color = "none") 
-        #  + xlim(c(0, max(cutoffTime))) 
           + labs(x = cohortXlabel
                  , y = bquote(sigma^2)
                  , color = bquote(beta)))
@@ -70,9 +67,7 @@ var_Rc_bet<- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, between
               + geom_line() 
               + geom_hline(yintercept = 1)
               + geom_vline(xintercept = 1)
-            #  + scale_color_manual(values = colorVec)
               + guides(color = "none") 
-          #    + xlim(c(0, max(cutoffTime))) 
               + labs(x = cohortXlabel
                      , y = bquote(sigma["bet"]^2)
                      , color = bquote(beta)))
@@ -84,7 +79,6 @@ var_Rc_with<- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, within
                     + geom_hline(yintercept = 1)
                     + geom_vline(xintercept = 1)
                     + guides(color = "none") 
-         #           + xlim(c(0, max(cutoffTime))) 
                     + labs(x = cohortXlabel
                            , y = bquote(sigma["with"]^2)
                            , color = bquote(beta)))
@@ -99,9 +93,7 @@ var_Rc<- (res_mat_mutated_2 |> ggplot(aes(x=cutoffTime, color = as.factor(B0)))
                                , sec.axis = sec_axis(~./scale_with2bet
                                                      , name=bquote(sigma["bet"]^2)))
           + geom_vline(xintercept = 1)
-       #   + scale_color_manual(values = colorVec)
          + guides(color = "none")
-        #  + xlim(c(0, max(cutoffTime)))
           + labs(x = cohortXlabel
                  , y = bquote(sigma^2)
                  ))
@@ -116,8 +108,6 @@ kappa_Rc<- (res_mat_mutated_2
             + geom_line() 
             + geom_hline(yintercept = 1)
             + geom_vline(xintercept = 1)
-          #  + scale_color_manual(values = colorVec)
-         #   + xlim(c(0, max(cutoffTime))) 
             + labs(x = cohortXlabel
                    , y = bquote(kappa)
                    , color = bquote(R[0]))
@@ -132,12 +122,9 @@ incidence <- (straightSim  |> mutate(scaledTime = time/tpeak) |>
           ggplot(aes(scaledTime, inc, color = as.factor(B0)))
         + geom_line()
         + geom_vline(xintercept = 1)
-        # + scale_color_manual(values = colorVec[1:length(betaList)])
-      #  + scale_color_brewer(palette = "Dark2")
         + labs(x = cohortXlabel
                , y = "Incidence"
                )
-        + xlim(c(0, max(cutoffTime))) 
         + guides(color="none") )
 
 ############### Final Plot #############

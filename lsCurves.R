@@ -1,9 +1,10 @@
 library(shellpipes)
-library(ggplot2)
+loadEnvironments()
+library(ggplot2);theme_set(theme(axis.title.x = element_text(size = xlabelFontSize)
+                                 ,axis.title.y = element_text(size = ylabelFontSize)))
 library(dplyr)
 library(tidyr)
 library(patchwork)
-loadEnvironments()
 startGraphics(height = 6, width = 9)
 
 

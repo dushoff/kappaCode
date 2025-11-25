@@ -17,6 +17,6 @@ cutoffTime <- c(0.05, seq(from=0.1, to = 2, by=0.1))
 ## legend guides parameters
 xpos <- 0.85; ypos <- 0.25
 legendFontSize <- 8; legendTitleFontSize <- 9
-
+xlabelFontSize <- 10; ylabelFontSize <- 10
 saveEnvironment()
 
