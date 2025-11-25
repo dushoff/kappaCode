@@ -264,7 +264,7 @@ sim <- function(B0=1,  cars = 1, finTime=365,
     }else{
       y <- y1
     }
-    inc <- c(diff(cum), NA)
+    inc <- c(diff(cum), NA)/timeStep
     
   }))
 }
@@ -410,6 +410,7 @@ v1Stats_tpeak_obs <- function(B0=1
                               , cars = 1
                               , finTime = 365
                               , cutoffTime = NULL
+															, tpeak = 100
                               , y0 = 1e-9
                               , t0 = 0){
   mySim<- sim(B0=B0, timeStep=finTime/steps,
@@ -449,7 +450,7 @@ v1Stats_tpeak_obs <- function(B0=1
       return(data.frame(stepSize=steps
                         , B0 = B0
                         , finTime=finTime
-                        , cutoffTime=cutoffTime
+                        , cutoffTime=cutoffTime/tpeak
                         , Finalsize=Finalsize
                         , FinalsizeW=FinalsizeW
                         , muRc=mu
@@ -463,6 +464,63 @@ v1Stats_tpeak_obs <- function(B0=1
       ))
     })
   })}
+
+v1Stats_tpeak_naive <- function(B0=1
+															, steps=300
+															, dfun = boxcar
+															, cars = 1
+															, finTime = 365
+															, cutoffTime = NULL
+															, tpeak = 100
+															, y0 = 1e-9
+															, t0 = 0){
+	mySim<- sim(B0=B0, timeStep=finTime/steps,
+							finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0
+	)
+	with(mySim, {
+		maxCohort <- t0 + cutoffTime - 5*finTime/steps
+		stopifnot(maxCohort > 2*finTime/steps)
+		ifun <- approxfun(time, y*x, rule=2)
+		cStats <- cohortStats_obs( B0 = B0,
+															 sdat=mySim,
+															 maxCohort=maxCohort, 
+															 stopTime = cutoffTime,
+															 cars=cars)
+		rcfun <- approxfun(cStats$cohort, cStats$Rc, rule=2)
+		varrcfun <- approxfun(cStats$cohort, cStats$varRc, rule=2)
+		wssfun <- approxfun(cStats$cohort, cStats$RcSS, rule = 2)
+		mom <- as.data.frame(ode(
+			y=c(finS=0, mu=0, SS=0, V=0, w = 0, checkV = 0)
+			, func=v1ODE_obs_naive
+			, times=unlist(cStats$cohort)
+			, parms=list( B0 = B0, ifun=ifun, rcfun=rcfun, varrcfun=varrcfun,
+										wssfun = wssfun)))
+		with(mom[nrow(mom), ], {
+			mu <- mu/finS
+			SS <- SS/finS
+			w <- w/finS
+			checkV <- (checkV/finS)
+			within <- (V/finS)
+			between <- (SS-mu^2)
+			total = within + between
+			otherCheck = (w-mu^2)
+			Finalsize <- finS
+			return(data.frame(stepSize=steps
+												, B0 = B0
+												, finTime=finTime
+												, cutoffTime=cutoffTime/tpeak
+												, Finalsize=Finalsize
+												, muRc=mu
+												, within=within
+												, checkWithin = checkV
+												, between=between
+												, withinSS = w
+												, totalVRc = total
+												, totalVRc_simplified = otherCheck
+												, totalKRc=total/mu^2
+			))
+		})
+	})}
 
 v1ODE_obs<-function (time, vars, parms) 
 {
@@ -479,6 +537,22 @@ v1ODE_obs<-function (time, vars, parms)
                 inc * cohortFrac * wss,
                 inc * cohortFrac * (wss - Rc^2)
   )))
+}
+
+v1ODE_obs_naive<-function (time, vars, parms) 
+{ with(as.list(vars,parms), {
+	inc <- ifun(time)
+	Rc <- rcfun(time)
+	varRc <- varrcfun(time)
+	wss <- wssfun(time)
+	return(list(c(inc
+								,inc* Rc
+								,inc* Rc * Rc
+								,inc* varRc
+								,inc* wss
+								,inc* (wss - Rc^2)
+	)))
+})
 }
 
 saveEnvironment()

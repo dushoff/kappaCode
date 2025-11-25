@@ -10,91 +10,83 @@ library(purrr)
 startGraphics(width=10, height=5)
 
 library(ggplot2); sourceFiles()
-
+ypos <- 0.70; xpos <- 0.9
 ############### Time Plot ########################
-res_mat_mutated_2 <- (res_mat
-	|> mutate( B0 = as.factor(B0))
+res_mat_mutated <- (res_mat
+	|> mutate( B0 = as.factor(B0)
+						 , KRc_within = within/muRc^2
+						 , KRc_bet = between/muRc^2
+						 , stdv = sqrt(totalVRc)
+						 )
 )
-
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("rescaled time (t"~"/"~t[peak]~")")
-mu_Rc <- (ggplot(res_mat_mutated_2)
-	+ aes(cutoffTime, muRc, color = B0) 
-	+ geom_point()
-	+ geom_line() 
-	+ geom_hline(yintercept = 1)
-	+ geom_vline(xintercept = 1)
-	+ guides(color = "none") 
-	+ labs(x = cohortXlabel
-		, y = bquote(mu)
-		, color = bquote(beta)
-	)
+
+res_mat_mutated_2 <- (res_mat_mutated
+											|>	pivot_longer(cols=c(KRc_within, KRc_bet
+																						 # ,total_KRc
+																						 )
+																			, names_to = "source"
+																			, values_to = "KRc_splitted" )
 )
 
-var_Rc_old <- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, totalVRc
-                                          , color = B0)) 
-          + geom_point()
-          + geom_line() 
-          + geom_hline(yintercept = 1)
-          + geom_vline(xintercept = 1)
-          + guides(color = "none") 
-          + labs(x = cohortXlabel
-                 , y = bquote(sigma^2)
-                 , color = bquote(beta)))
 
-var_Rc_bet<- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, between
-                                              , color = B0))
-              + geom_point()
-              + geom_line() 
-              + geom_hline(yintercept = 1)
-              + geom_vline(xintercept = 1)
-              + guides(color = "none") 
-              + labs(x = cohortXlabel
-                     , y = bquote(sigma["bet"]^2)
-                     , color = bquote(beta)))
+kappa_Rc <- (ggplot(res_mat_mutated_2)
+										+ geom_point(aes(cutoffTime, KRc_splitted, color = B0
+													, shape = source) )
+										+ geom_line(aes(cutoffTime, KRc_splitted, color = B0
+																, linetype = source  ))
+										+ geom_vline(xintercept = 1)
+										+ guides(color = "none", linetype = "none") 
+										+ labs(x = cohortXlabel
+													 , y = bquote(kappa)
+										)
+										+ scale_shape_manual(
+						 	values = c("KRc_bet" = 0, "KRc_within" = 17, "totalKRc" = 10)
+						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
+						 							 ,"KRc_within" = bquote(kappa["with"])
+						 							 # , "totalKRc" = bquote(kappa)
+						 							 
+						 							 )
+						 	, name = "source"
+						 )
+						 + ylim(c(0,1.2))
+						 + theme(legend.position = c(0.2, 0.9)
+						 				, legend.justification = c("left", "bottom")
+						 				, legend.title = element_text(size = legendTitleFontSize)
+						 				, legend.text  = element_text(size = legendFontSize)
+						 				, legend.direction = "horizontal")
+)
 
-var_Rc_with<- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, within
-                                                    , color = B0))
-                    + geom_point()
-                    + geom_line() 
-                    + geom_hline(yintercept = 1)
-                    + geom_vline(xintercept = 1)
-                    + guides(color = "none") 
-                    + labs(x = cohortXlabel
-                           , y = bquote(sigma["with"]^2)
-                           , color = bquote(beta)))
-####
-scale_with2bet <- max(res_mat_mutated_2$within)/max(res_mat_mutated_2$between)
-var_Rc<- (res_mat_mutated_2 |> ggplot(aes(x=cutoffTime, color = B0))
-          + geom_point(aes(y = within), size = 0.75)
-          + geom_line(aes(y = within), linetype = "dotted")
-          + geom_point(aes(y = scale_with2bet* between))
-          + geom_line(aes(y = scale_with2bet* between))
-          + scale_y_continuous(name = bquote(sigma["with"]^2)
-                               , sec.axis = sec_axis(~./scale_with2bet
-                                                     , name=bquote(sigma["bet"]^2)))
-          + geom_vline(xintercept = 1)
-         + guides(color = "none")
-          + labs(x = cohortXlabel
-                 , y = bquote(sigma^2)
-                 ))
+res_mat_mutated_3 <- (res_mat_mutated
+											|>	pivot_longer(cols=c(muRc, stdv)
+																			, names_to = "source"
+																			, values_to = "quantity" )
+)
 
-####
-
-kappa_Rc<- (res_mat_mutated_2 
-            |> ggplot(aes(cutoffTime, totalKRc, color = B0)) 
-            + geom_point()
-            + geom_line() 
-            + geom_hline(yintercept = 1)
-            + geom_vline(xintercept = 1)
-            + labs(x = cohortXlabel
-                   , y = bquote(kappa)
-                   , color = bquote(R[0]))
-         +  theme(legend.position = c(0.75, 0.25)
-                  , legend.justification = c("left", "bottom")
-                   , legend.title = element_text(size = legendTitleFontSize)
-                  , legend.text  = element_text(size = legendFontSize))
-         )
+mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
+														 + geom_point(aes(cutoffTime, quantity
+														 								 , color = B0
+														 								 , shape = source) )
+														 + geom_line(aes(cutoffTime, quantity
+														 								, color = B0
+														 						, linetype = source))
+														 + geom_hline(yintercept = 1)
+														 + geom_vline(xintercept = 1)
+														 + guides(color = "none", linetype = "none") 
+														 + labs(x = cohortXlabel
+														 			 , y = "Cases per case"
+														 )
+														+ scale_shape_manual(
+											values = c("muRc" = 0, "stdv" = 17)
+											, labels = c("muRc" = bquote(mu), "stdv" = bquote(sigma))
+											, name = "statistics"
+										)
+										+ theme(legend.position = c(xpos, ypos)
+														, legend.justification = c("right", "bottom")
+														, legend.title = element_text(size = legendTitleFontSize)
+														, legend.text  = element_text(size = legendFontSize))
+)
 
 ### incidence 
 incidence <- (straightSim  |> mutate(scaledTime = time/tpeak) |>
@@ -103,11 +95,17 @@ incidence <- (straightSim  |> mutate(scaledTime = time/tpeak) |>
         + geom_vline(xintercept = 1)
         + labs(x = cohortXlabel
                , y = "Incidence"
+        			 , color = bquote(R[0])
                )
-        + guides(color="none") )
+							+ theme(legend.position = c(xpos, ypos)
+											, legend.justification = c("right", "bottom")
+											, legend.title = element_text(size = legendTitleFontSize)
+											, legend.text  = element_text(size = legendFontSize))
+         )
 
 ############### Final Plot #############
-cohortFig <- incidence + mu_Rc + var_Rc + kappa_Rc
+cohortFig <- (incidence + mu_and_sigma_Rc + kappa_Rc
+)
 
 print(cohortFig 
       + plot_annotation(tag_levels ="a", tag_suffix  = ")")
