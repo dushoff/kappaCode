@@ -55,10 +55,11 @@ RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotV
 RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R plotStyle.R slow/RcTimePlotVaryingPeakObsSim.rda params.rda
 
 ## Some helper functions
-funs.Rout: funs.R
+## funs.Rout: funs.R
 
 ## Setting parameters
-params.Rout: params.R
+## params.Rout: params.R
+
 ######################################################################
 
 ### Makestuff
