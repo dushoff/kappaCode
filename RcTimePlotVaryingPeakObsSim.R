@@ -6,11 +6,13 @@ library(shellpipes)
 #An attempt to implement V1 of Roswell's manuscript using a deterministic framework
 loadEnvironments()
 cutoffTime <- c(0.05, 0.5, 1, 2) 
+steps<-1e4
+finTime <- 80
 gr<- expand.grid(B0 = betaList, cutoffTime = cutoffTime)
 res_mat <- map2_dfr(.x = gr$B0, .y = gr$cutoffTime,
                     .f = function(x,y){v1Stats_tpeak_obs(B0 = x
-                                               ,cars=cars
-                                               ,steps=steps
+                                              ,cars=cars
+                                              ,steps=steps
                                               ,y0=y0
                                               ,cutoffTime = y*peakAssigner(x)
                                               ,finTime = finTime

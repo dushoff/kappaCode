@@ -416,7 +416,8 @@ v1Stats_tpeak_obs <- function(B0=1
               finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0
   )
   with(mySim, {
-    maxCohort <- t0 + cutoffTime - 10*finTime/steps
+    maxCohort <- t0 + cutoffTime - 5*finTime/steps
+    stopifnot(maxCohort > 2*finTime/steps)
     ifun <- approxfun(time, y*x, rule=2)
     cStats <- cohortStats_obs( B0 = B0,
                                sdat=mySim,
