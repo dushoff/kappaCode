@@ -26,12 +26,16 @@ update_geom_defaults("hline", list(
 update_geom_defaults("point", list(
   size = 1.5
 ))
-############### Time Plot ########################
+scale_colour_discrete <- function(...) {
+  ggplot2::scale_colour_brewer(palette = "Dark2", ...)
+}
+
+scale_fill_discrete <- function(...) {
+  ggplot2::scale_fill_brewer(palette = "Dark2", ...)
+}############### Time Plot ########################
 res_mat_mutated_2 <- res_mat |> mutate(
   B0 = as.factor(B0) )
 ########### Rc and kappa_c over time #########
-colorVec<- c("#F8766D", "#00BFC4", "#7B3294", "#E69F00", "#56B4E9"
-             ,"#009E73", "#0072B2", "#D55E00", "#CC79A7")
 cohortXlabel <- bquote("rescaled time (t"~"/"~t[peak]~")")
 mu_Rc <- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, muRc
                                           , color = as.factor(B0))) 
@@ -39,9 +43,9 @@ mu_Rc <- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, muRc
           + geom_line() 
           + geom_hline(yintercept = 1)
           + geom_vline(xintercept = 1)
-          + scale_color_manual(values = colorVec)
+        #  + scale_color_manual(values = colorVec)
           + guides(color = "none") 
-          + xlim(c(0, max(cutoffTime))) 
+         # + xlim(c(0, max(cutoffTime))) 
           + labs(x = cohortXlabel
                  , y = bquote(mu)
                  , color = bquote(beta)))
@@ -53,9 +57,9 @@ var_Rc<- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, totalVRc
           + geom_line() 
           + geom_hline(yintercept = 1)
           + geom_vline(xintercept = 1)
-          + scale_color_manual(values = colorVec)
+        #  + scale_color_manual(values = colorVec)
           + guides(color = "none") 
-          + xlim(c(0, max(cutoffTime))) 
+        #  + xlim(c(0, max(cutoffTime))) 
           + labs(x = cohortXlabel
                  , y = bquote(sigma^2)
                  , color = bquote(beta)))
@@ -66,9 +70,9 @@ var_Rc_bet<- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, between
               + geom_line() 
               + geom_hline(yintercept = 1)
               + geom_vline(xintercept = 1)
-              + scale_color_manual(values = colorVec)
+            #  + scale_color_manual(values = colorVec)
               + guides(color = "none") 
-              + xlim(c(0, max(cutoffTime))) 
+          #    + xlim(c(0, max(cutoffTime))) 
               + labs(x = cohortXlabel
                      , y = bquote(sigma["bet"]^2)
                      , color = bquote(beta)))
@@ -79,30 +83,28 @@ var_Rc_with<- (res_mat_mutated_2 |> ggplot(aes(cutoffTime, within
                     + geom_line() 
                     + geom_hline(yintercept = 1)
                     + geom_vline(xintercept = 1)
-                    + scale_color_manual(values = colorVec)
                     + guides(color = "none") 
-                    + xlim(c(0, max(cutoffTime))) 
+         #           + xlim(c(0, max(cutoffTime))) 
                     + labs(x = cohortXlabel
                            , y = bquote(sigma["with"]^2)
                            , color = bquote(beta)))
 ####
-# var_Rc<- (res_mat_mutated_2 |> ggplot(aes(x=cutoffTime))
-#           + geom_point(aes(y = within))
-#           + geom_line(aee(y = within))
-#           + geom_point(aes(y = totalVRc))
-#           + geom_line(ase(y = totalVRc))
-#           + geom_point(aes(y = between))
-#           + geom_line(ase(y = between))
-#           + scale_y_continuous(name = "within"
-#                                , sec.axis = sec_axis(~.*1, name="between"))
-#           + geom_hline(yintercept = 1)
-#           + geom_vline(xintercept = 1)
-#           + scale_color_manual(values = colorVec)
-#           + guides(color = "none")
-#           + xlim(c(0, max(cutoffTime)))
-#           + labs(x = cohortXlabel
-#                  , y = bquote(sigma^2)
-#                  , color = bquote(beta)))
+scale_with2bet <- max(res_mat_mutated_2$within)/max(res_mat_mutated_2$between)
+var_Rc<- (res_mat_mutated_2 |> ggplot(aes(x=cutoffTime, color = as.factor(B0)))
+          + geom_point(aes(y = within), size = 0.75)
+          + geom_line(aes(y = within), linetype = "dotted")
+          + geom_point(aes(y = scale_with2bet* between))
+          + geom_line(aes(y = scale_with2bet* between))
+          + scale_y_continuous(name = bquote(sigma["with"]^2)
+                               , sec.axis = sec_axis(~./scale_with2bet
+                                                     , name=bquote(sigma["bet"]^2)))
+          + geom_vline(xintercept = 1)
+       #   + scale_color_manual(values = colorVec)
+         + guides(color = "none")
+        #  + xlim(c(0, max(cutoffTime)))
+          + labs(x = cohortXlabel
+                 , y = bquote(sigma^2)
+                 ))
 
 
 ####
@@ -114,29 +116,35 @@ kappa_Rc<- (res_mat_mutated_2
             + geom_line() 
             + geom_hline(yintercept = 1)
             + geom_vline(xintercept = 1)
-            + scale_color_manual(values = colorVec)
-            + xlim(c(0, max(cutoffTime))) 
+          #  + scale_color_manual(values = colorVec)
+         #   + xlim(c(0, max(cutoffTime))) 
             + labs(x = cohortXlabel
                    , y = bquote(kappa)
-                   , color = bquote(beta)))
+                   , color = bquote(R[0]))
+         +  theme(legend.position = c(0.75, 0.25)
+                  , legend.justification = c("left", "bottom")
+                   , legend.title = element_text(size = legendTitleFontSize)
+                  , legend.text  = element_text(size = legendFontSize))
+         )
 
 ### incidence 
 incidence <- (straightSim  |> mutate(scaledTime = time/tpeak) |>
           ggplot(aes(scaledTime, inc, color = as.factor(B0)))
         + geom_line()
-        + scale_color_manual(values = colorVec[1:length(betaList)])
+        + geom_vline(xintercept = 1)
+        # + scale_color_manual(values = colorVec[1:length(betaList)])
+      #  + scale_color_brewer(palette = "Dark2")
         + labs(x = cohortXlabel
-               , y = "incidence"
-               , color = bquote(beta))
-        + xlim(c(0, max(cutoffTime)
-                 )) 
+               , y = "Incidence"
+               )
+        + xlim(c(0, max(cutoffTime))) 
         + guides(color="none") )
 
 ############### Final Plot #############
-cohortFig <- incidence + mu_Rc + var_Rc + var_Rc_bet + var_Rc_with + kappa_Rc
+cohortFig <- incidence + mu_Rc + var_Rc + kappa_Rc
 
 print(cohortFig 
-      + plot_annotation(tag_levels ="a")
+      + plot_annotation(tag_levels ="a", tag_suffix  = ")")
       # + plot_layout(heights=c(2,1,1) )
 )
 

@@ -10,14 +10,16 @@ label_wrap <- function(wrap_level) {
     paste("R0 =",x)
   })}
 
-cPlot <- ( 
-          ggplot(IBM_v1_results_rep) +
-	 aes(num_cases, after_stat(prop))
+cPlot <- ( IBM_v1_results_rep |> mutate(beta = factor(beta)) |>
+          ggplot() +
+	 aes(num_cases, after_stat(prop), fill=beta)
 	+ geom_bar()
 	+ xlab("Secondary cases per infector")
-	+ ylab("Density")
+	+ ylab("Proportion")
 	+ facet_wrap(~beta ,labeller = labeller(beta = function(x){
 	  label_wrap(x)}))
++ scale_fill_brewer(palette = "Dark2")
++ guides(fill= "none")
 )
 rcHistplot<- cPlot
 print(cPlot)

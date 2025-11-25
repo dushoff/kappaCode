@@ -300,7 +300,8 @@ v1ODE <- function(time, vars, parms){
 
 peakAssigner<-function(R0){
   SIRsim<-sim(B0=R0, finTime=50, timeStep=0.0001,  y0 = 1e-9)
-  idx<-which.min(abs(SIRsim$x - 1/R0))
+  idx<-which.max(SIRsim$inc)
+  #idx<-which.min(abs(SIRsim$x - 1/R0))
   return(SIRsim[idx,"time"])
 }
 v1Stats_tpeak <- function(B0=1
