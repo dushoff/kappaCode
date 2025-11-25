@@ -17,7 +17,7 @@ stackBarplot <- (cohorts
                    , fill = source)
              + geom_bar(stat = "identity"
                         , position = "stack"
-                        , width = 0.5)
+                        , width = 0.25)
              + ylab("Variance in cases per case") 
              + xlab(bquote(R[0]))
              + theme(axis.title.y = element_text(size = legendFontSize)
