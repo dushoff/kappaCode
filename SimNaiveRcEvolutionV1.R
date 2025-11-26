@@ -7,13 +7,14 @@ library(shellpipes)
 loadEnvironments()
 gr<- expand.grid(B0 = betaList, cutoffTime = cutoffTime)
 res_mat <- map2_dfr(.x = gr$B0, .y = gr$cutoffTime,
-                    .f = function(x,y){v1Stats_tpeak_obs(B0 = x
+                    .f = function(x,y){v1Stats_tpeak_naive(B0 = x
                                               ,cars=cars
                                               ,steps=steps
                                               ,y0=y0
                                               ,cutoffTime = y*peakAssigner(x)
                     													,tpeak = peakAssigner(x)
                                               ,finTime = finTime
+                    													, naive_type = 2
                                               ,t0=t0)
 })
 

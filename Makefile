@@ -50,10 +50,14 @@ slowtarget/RcTimePlotVaryingPeakSim.Rout: RcTimePlotVaryingPeakSim.R params.rda 
 
 slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R params.rda funs.rda
 	$(pipeR)
-
+slowtarget/SimNaiveRcEvolution.Rout: SimNaiveRcEvolution.R params.rda funs.rda
+	$(pipeR)
+slowtarget/SimNaiveRcEvolutionV1.Rout: SimNaiveRcEvolutionV1.R params.rda funs.rda
+	$(pipeR)
 RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotVaryingPeakSim.rda params.rda
 RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R plotStyle.R slow/RcTimePlotVaryingPeakObsSim.rda params.rda
-
+PlotNaiveRcEvolution.Rout: PlotNaiveRcEvolution.R plotStyle.R slow/SimNaiveRcEvolution.rda params.rda
+PlotNaiveRcEvolutionV1.Rout: PlotNaiveRcEvolutionV1.R plotStyle.R slow/SimNaiveRcEvolutionV1.rda params.rda
 ## Some helper functions
 ## funs.Rout: funs.R
 
