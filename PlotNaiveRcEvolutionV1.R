@@ -36,6 +36,7 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 						 + geom_line(aes(cutoffTime, KRc_splitted, color = B0
 						 								, linetype = source  ))
 						 + geom_vline(xintercept = 1)
+						 + geom_hline(yintercept = 1)
 						 + guides(color = "none") 
 						 + labs(x = cohortXlabel
 						 			 , y = bquote(kappa)
