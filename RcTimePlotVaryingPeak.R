@@ -41,7 +41,7 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 													 , y = bquote(kappa)
 										)
 										+ scale_shape_manual(
-						 	values = c("KRc_bet" = 0, "KRc_within" = 17)
+						 	values = c("KRc_bet" = kbetShape, "KRc_within" = kwithShape)
 						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
 						 							 ,"KRc_within" = bquote(kappa["with"])
 						 							 # , "totalKRc" = bquote(kappa)
