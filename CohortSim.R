@@ -5,15 +5,18 @@ library(deSolve)
 library(shellpipes)
 #An attempt to implement V1 of Roswell's manuscript using a deterministic framework
 loadEnvironments()
- res_mat <- map_dfr(betaList, function(x){v1Stats_tpeak(B0 = x
+ res_mat <- map_dfr(betaList, function(x){return(data.frame(cohortStatsRcPlot(B0 = x
                                               ,cars=cars
                                               ,cohortProp=cohortProp
                                               ,steps=steps
-                                              ,tpeak=peakAssigner(x)
                                               ,y0=y0
-                                              ,cutoffTime = cutoffTime
-                                              ,finTime = finTime
+                                              ,finTime=finTime
+                                              ,stopTime=peakAssigner(x)*max(cutoffTime) 
                                               ,t0=t0)
+                                              ,tpeak = peakAssigner(x)
+                                              ,B0 = x
+ )
+ )
 })
 
 straightSim <- map_dfr(betaList, function(B0){

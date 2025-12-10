@@ -249,22 +249,21 @@ sim <- function(B0=1,  cars = 1, finTime=365,
   infc <- c(y0,rep(0,cars-1))
   names(infc) <- paste0("y", 1:cars)
   y_init <- c(x = x0, infc, r=r0, cum = cum0)
-  if(t0 !=0){timePoints<- c(0, seq(from=t0, to=t0 + finTime, by=timeStep))}else{
-    timePoints<- seq(from=0, to=finTime, by=timeStep)}
+  timePoints<- seq(from=0, to=t0 + finTime, by=timeStep)
   sim <- as.data.frame(ode(
     y = y_init
     , func=dfun
     , times=timePoints
     , parms=list(B0=B0, cars = cars)
   ))
-  if(t0!=0){sim <- sim[!sim$time==0,]}
+  sim <- sim[sim$time>=t0,]
   return(within(sim, {
     if (cars>1){
       y <- rowSums(as.data.frame(mget(paste0("y", 1:cars))))
     }else{
       y <- y1
     }
-    inc <- c(diff(cum), NA)/timeStep
+    inc <- c(NA,diff(cum))/timeStep
     
   }))
 }
@@ -287,7 +286,7 @@ cohortStats <- function(B0 = 1
 peakAssigner<-function(R0){
   SIRsim<-sim(B0=R0, finTime=50, timeStep=0.0001,  y0 = 1e-9)
   idx<-which.max(SIRsim$inc)
-  #idx<-which.min(abs(SIRsim$x - 1/R0))
+  #idx<-which.min(abs(SIRsim$x - 1/R0)) this one isn't accurate
   return(SIRsim[idx,"time"])
 }
 v1Stats_tpeak <- function(B0=1
@@ -369,7 +368,50 @@ cCalc_obs <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
     ))
   })
 }
-
+cCalc_trunc <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
+	Bcohort<-B0
+	Ri <- Bcohort*sfun(cohort)
+	sTime <- time[time>=cohort & time<stopTime]
+	mom <- cMoments(sTime, sfun, T0=cohort, cars=cars, 
+									B0=B0)
+	with(mom[nrow(mom), ], {
+		if(abs(cumden-1)<tol){
+		Rctot=Rctot/cumden
+		RcSS=RcSS/cumden
+		return(list(
+			cohort=cohort, Ri = Ri, Rc=Rctot, varRc=(RcSS-Rctot^2)
+			, RcSS =RcSS
+			, cumden=cumden
+		))}else{ #attribute the last Rc to those remained infectious after the stop time
+			Rctot=Rctot + Rc*(1-cumden)
+			RcSS=RcSS + Rc*Rc*(1-cumden)
+			return(list(
+				cohort=cohort, Ri = Ri, Rc=Rctot, varRc=(RcSS-Rctot^2)
+				, RcSS =RcSS
+				, cumden=cumden
+			))	
+		}
+		
+	})
+}
+cohortStats_trunc <- function(B0 = 1
+														, sdat = NULL
+														, maxCohort = NULL
+														, dfun = boxcar
+														, cars = 1
+														, stopTime = NULL
+														, ...){
+	sfun <- approxfun(sdat$time, sdat$x, rule=2)
+	cohorts <- with(sdat, time[time<=maxCohort])
+	return(as.data.frame(t(
+		sapply(cohorts, function(c) cCalc_trunc(sdat$time, cohort=c, sfun=sfun,
+																					tol=1e-4,
+																					cars=cars,
+																					stopTime = stopTime,
+																					B0 = B0
+		))
+	)))
+}
 cohortStats_obs <- function(B0 = 1
                             , sdat = NULL
                             , maxCohort = NULL
@@ -434,9 +476,9 @@ v1Stats_tpeak_obs <- function(B0=1
               finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0
   )
   with(mySim, {
-    maxCohort <- t0 + cutoffTime - 5*finTime/steps
-    stopifnot(maxCohort > 2*finTime/steps)
-    ifun <- approxfun(time, y*x, rule=2)
+    maxCohort <- t0 + cutoffTime - 2*finTime/steps
+    stopifnot(maxCohort > 1*finTime/steps)
+    ifun <- approxfun(time, B0*y*x, rule=2)
     cStats <- cohortStats_obs( B0 = B0,
                                sdat=mySim,
                                maxCohort=maxCohort, 
@@ -450,7 +492,7 @@ v1Stats_tpeak_obs <- function(B0=1
       y=c(finS=0, finSw=0,  mu=0, SS=0, V=0, w = 0, checkV = 0)
       , func=v1ODE_obs
       , times=unlist(cStats$cohort)
-      , parms=list( B0 = B0, ifun=ifun, rcfun=rcfun, varrcfun=varrcfun,
+      , parms=list(ifun=ifun, rcfun=rcfun, varrcfun=varrcfun,
                     wssfun = wssfun,
                     cohortFracFun = cohortFracFun)))
     with(mom[nrow(mom), ], {
@@ -481,42 +523,33 @@ v1Stats_tpeak_obs <- function(B0=1
       ))
     })
   })}
-
-v1Stats_tpeak_naive <- function(B0=1
-															, steps=300
-															, dfun = boxcar
-															, cars = 1
-															, finTime = 365
-															, cutoffTime = NULL
-															, tpeak = 100
-															, y0 = 1e-9
-															, naive_type = 1
-															, t0 = 0){
+v1Stats_trunc <- function(B0=1
+																, steps=300
+																, dfun = boxcar
+																, cars = 1
+																, finTime = 365
+																, cutoffTime = NULL
+																, tpeak = 100
+																, y0 = 1e-9
+																, t0 = 0){
 	mySim<- sim(B0=B0, timeStep=finTime/steps,
 							finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0
 	)
 	with(mySim, {
-		maxCohort <- t0 + cutoffTime - 5*finTime/steps #to avoid 
-		stopifnot(maxCohort > 2*finTime/steps)
-		ifun <- approxfun(time, y*x, rule=2)
-		if(naive_type == 1){ #naive_type = 1, means that mean and variance of the cohorts are not scaled relative to the fraction of recovered
-		cStats <- cohortStats_obs( B0 = B0,
-															 sdat=mySim,
-															 maxCohort=maxCohort, 
-															 stopTime = cutoffTime,
-															 cars=cars)}else{
-															 	cStats <- cohortStats_v1( B0 = B0,
-															 														 sdat=mySim,
-															 														 maxCohort=maxCohort, 
-															 														 stopTime = cutoffTime,
-															 														 cars=cars)	
-															 }
+		maxCohort <- t0 + cutoffTime - 2*finTime/steps #to avoid 
+		stopifnot(maxCohort > finTime/steps)
+		ifun <- approxfun(time, B0*y*x, rule=2)
+		cStats <- cohortStats_trunc( B0 = B0,
+																 sdat=mySim,
+																 maxCohort=maxCohort, 
+																 stopTime = cutoffTime,
+																 cars=cars)
 		rcfun <- approxfun(cStats$cohort, cStats$Rc, rule=2)
 		varrcfun <- approxfun(cStats$cohort, cStats$varRc, rule=2)
 		wssfun <- approxfun(cStats$cohort, cStats$RcSS, rule = 2)
 		mom <- as.data.frame(ode(
 			y=c(finS=0, mu=0, SS=0, V=0, w = 0, checkV = 0)
-			, func=v1ODE_obs_naive
+			, func=v1ODE
 			, times=unlist(cStats$cohort)
 			, parms=list( B0 = B0, ifun=ifun, rcfun=rcfun, varrcfun=varrcfun,
 										wssfun = wssfun)))
@@ -547,6 +580,7 @@ v1Stats_tpeak_naive <- function(B0=1
 		})
 	})}
 
+
 v1ODE_obs<-function (time, vars, parms) 
 {
   inc <- parms$ifun(time)
@@ -564,21 +598,6 @@ v1ODE_obs<-function (time, vars, parms)
   )))
 }
 
-v1ODE_obs_naive<-function (time, vars, parms) 
-{ with(as.list(c(vars,parms)), {
-	inc <- ifun(time)
-	Rc <- rcfun(time)
-	varRc <- varrcfun(time)
-	wss <- wssfun(time)
-	return(list(c(inc
-								,inc* Rc
-								,inc* Rc * Rc
-								,inc* varRc
-								,inc* wss
-								,inc* (wss - Rc^2)
-	)))
-})
-}
 
 v1ODE <- function(time, vars, parms){
 	with(as.list(c(vars,parms)),{
@@ -596,5 +615,60 @@ v1ODE <- function(time, vars, parms){
 		)))
 	})
 }
+#A better way for calculating incidence tk=(t_i + t_{i+1})/2
+sim_and_inc <- function(B0=1,  cars = 1, finTime=365,
+								timeStep=0.1, dfun=boxcar,  t0 =0, 
+								y0 = 1e-9){
+	x0 <- 1-y0
+	r0 <- 0
+	cum0 <- y0
+	infc <- c(y0,rep(0,cars-1))
+	names(infc) <- paste0("y", 1:cars)
+	y_init <- c(x = x0, infc, r=r0, cum = cum0)
+	timePoints<- seq(from=0, to=t0 + finTime, by=timeStep)
+	sim <- as.data.frame(ode(
+		y = y_init
+		, func=dfun
+		, times=timePoints
+		, parms=list(B0=B0, cars = cars)
+	))
+	sim <- sim[sim$time>=t0,]
+	return(within(sim, {
+		if (cars>1){
+			y <- rowSums(as.data.frame(mget(paste0("y", 1:cars))))
+		}else{
+			y <- y1
+		}
+		mid_time <- c(NA, (head(time, -1) + tail(time, -1)) / 2)
+		inc      <- c(NA, diff(cum))/timeStep
+	}))
+}
 
+cohortStatsRcPlot <- function(B0=1
+															, cars = 1
+															, cohortProp=0.6
+															, steps=300
+															, y0 = 1e-9
+															, finTime = 365
+															, stopTime = 100
+															, dfun = boxcar
+															, t0 = 0
+															
+){
+	sdat<- sim(B0=B0,timeStep=finTime/steps,
+						 finTime=finTime, dfun=dfun, cars=cars, y0=y0, t0=t0
+	)
+	sfun <- approxfun(sdat$time, sdat$x, rule=2)
+	maxCohort <- min(t0 + cohortProp*finTime, stopTime)
+	cohorts <- with(sdat, time[time<=maxCohort])
+	return(as.data.frame(t(
+		sapply(cohorts, function(c) cCalc(sdat$time, cohort=c, sfun=sfun, 
+																			tol=1e-4,
+																			cars=cars,
+																			B0 = B0
+		))
+	)
+	)
+	)
+}
 saveEnvironment()

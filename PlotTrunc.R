@@ -10,7 +10,7 @@ library(purrr)
 startGraphics(width=10, height=5)
 
 library(ggplot2); sourceFiles()
-############### Time Plot #######################
+############### Time Plot ########################
 res_mat_mutated <- (res_mat
 										|> mutate( B0 = as.factor(B0)
 															 , KRc_within = within/muRc^2
@@ -21,9 +21,15 @@ res_mat_mutated <- (res_mat
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("rescaled time (t"~"/"~t[peak]~")")
 
+# res_mat_mutated_2 <- (res_mat_mutated
+# 											|>	pivot_longer(cols=c(KRc_within, KRc_bet
+# 																						 # ,total_KRc
+# 											)
+# 											, names_to = "source"
+# 											, values_to = "KRc_splitted" )
+# )
 res_mat_mutated_2 <- (res_mat_mutated
 											|>	pivot_longer(cols=c(totalKRc, KRc_bet
-																						 # ,total_KRc
 											)
 											, names_to = "source"
 											, values_to = "KRc_splitted" )
@@ -36,6 +42,7 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 						 + geom_line(aes(cutoffTime, KRc_splitted, color = B0
 						 								, linetype = source  ))
 						 + geom_vline(xintercept = 1)
+						 + geom_hline(yintercept = 1)
 						 + guides(color = "none") 
 						 + labs(x = cohortXlabel
 						 			 , y = bquote(kappa)
@@ -44,18 +51,19 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 						 	values = c("KRc_bet" = kbetShape, "totalKRc" = kwithShape)
 						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
 						 							# ,"KRc_within" = bquote(kappa["with"])
-						 							, "totalKRc" = bquote(kappa)
+						 							  , "totalKRc" = bquote(kappa)
+						 							 
 						 	)
-						 	, name = "source")
-						 	+ scale_linetype_manual(
-						 		values = c("KRc_bet" = "solid", "totalKRc" = "dashed")
-						 		, labels = c("KRc_bet" = bquote(kappa["bet"])
-						 								# ,"KRc_within" = bquote(kappa["with"])
-						 								 , "totalKRc" = bquote(kappa)
-						 								 
-						 		)
 						 	, name = "source"
 						 )
+						 + scale_linetype_manual(
+						 	values = c("KRc_bet" = "solid", "totalKRc" = "dashed")
+						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
+						 							# ,"KRc_within" = bquote(kappa["with"])
+						 							, "totalKRc" = bquote(kappa)
+						 )
+						 , name = "source")
+						
 )
 
 res_mat_mutated_3 <- (res_mat_mutated
@@ -79,14 +87,12 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 										)
 										+ scale_shape_manual(
 											values = c("muRc" = muRcShape, "stdv" = stdvShape)
-											, labels = c("muRc" = bquote(mu)
-																	 , "stdv" = bquote(sigma))
+											, labels = c("muRc" = bquote(mu), "stdv" = bquote(sigma))
 											, name = "statistics"
 										)
-										+	scale_linetype_manual(
+										+ scale_linetype_manual(
 											values = c("muRc" = "solid", "stdv" = "dashed")
-											, labels = c("muRc" = bquote(mu)
-																	 , "stdv" = bquote(sigma))
+											, labels = c("muRc" = bquote(mu), "stdv" = bquote(sigma))
 											, name = "statistics"
 										)
 )
@@ -108,7 +114,7 @@ cohortFig <- (incidence + mu_and_sigma_Rc + kappa_Rc
 
 print(cohortFig 
 			+ plot_annotation(tag_levels ="a", tag_suffix  = ")")
-			 + plot_layout(guides= "collect" )
+			 + plot_layout(guides = "collect")
 )
 
 #saveEnvironment()

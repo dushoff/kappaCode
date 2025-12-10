@@ -13,7 +13,7 @@ library(ggplot2); sourceFiles()
 ############### Time Plot ########################
 res_mat_mutated <- (res_mat
 	|> mutate( B0 = as.factor(B0)
-						 , KRc_within = within/muRc^2
+					#	 , KRc_within = within/muRc^2
 						 , KRc_bet = between/muRc^2
 						 , stdv = sqrt(totalVRc)
 						 )
@@ -22,7 +22,7 @@ res_mat_mutated <- (res_mat
 cohortXlabel <- bquote("rescaled time (t"~"/"~t[peak]~")")
 
 res_mat_mutated_2 <- (res_mat_mutated
-											|>	pivot_longer(cols=c(KRc_within, KRc_bet
+											|>	pivot_longer(cols=c(KRc_bet, totalKRc
 																						 # ,total_KRc
 																						 )
 																			, names_to = "source"
@@ -41,19 +41,19 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 													 , y = bquote(kappa)
 										)
 										+ scale_shape_manual(
-						 	values = c("KRc_bet" = kbetShape, "KRc_within" = kwithShape)
+						 	values = c("KRc_bet" = kbetShape, "totalKRc" = kwithShape)
 						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
-						 							 ,"KRc_within" = bquote(kappa["with"])
-						 							 # , "totalKRc" = bquote(kappa)
+						 							 #,"KRc_within" = bquote(kappa["with"])
+						 							  , "totalKRc" = bquote(kappa)
 						 							 
 						 							 )
 						 	, name = "source"
 						 )
 						 + scale_linetype_manual(
-						 	values = c("KRc_bet" = "solid", "KRc_within" = "dashed")
+						 	values = c("KRc_bet" = "solid", "totalKRc" = "dashed")
 						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
-						 							 ,"KRc_within" = bquote(kappa["with"])
-						 							 # , "totalKRc" = bquote(kappa)
+						 							# ,"KRc_within" = bquote(kappa["with"])
+						 							  , "totalKRc" = bquote(kappa)
 						 							 
 						 	)
 						 	, name = "source"
@@ -91,7 +91,7 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 )
 
 ### incidence 
-incidence <- (straightSim  |> mutate(scaledTime = time/tpeak) |>
+incidence <- (straightSim |> drop_na() |> mutate(scaledTime = mid_time/tpeak) |>
           ggplot(aes(scaledTime, inc, color = as.factor(B0)))
         + geom_line()
         + geom_vline(xintercept = 1)
@@ -101,7 +101,7 @@ incidence <- (straightSim  |> mutate(scaledTime = time/tpeak) |>
                )
          )
 
-############### Final Plot #############
+############### Final Plot ############
 cohortFig <- (incidence + mu_and_sigma_Rc + kappa_Rc
 )
 
@@ -110,4 +110,4 @@ print(cohortFig
        + plot_layout(guides = "collect")
 )
 
-#saveEnvironment()
+saveEnvironment()
