@@ -9,7 +9,7 @@ library(ggplot2);theme_set( theme(axis.title.x = element_text(size = xlabelFontS
 library(dplyr)
 library(tidyr)
 library(patchwork)
-startGraphics(height = 6, width = 9)
+startGraphics(height = 5, width = 4)
 
 fancyHist <- (deadDat 
 	|> separate(distr
