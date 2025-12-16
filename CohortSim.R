@@ -5,6 +5,7 @@ library(deSolve)
 library(shellpipes)
 #An attempt to implement V1 of Roswell's manuscript using a deterministic framework
 loadEnvironments()
+cutoffTime <- c(0.01, 0.02, 0.5,seq(from=0.1, to = 3.5, by=0.1))
  res_mat <- map_dfr(betaList, function(x){return(data.frame(cohortStatsRcPlot(B0 = x
                                               ,cars=cars
                                               ,cohortProp=cohortProp

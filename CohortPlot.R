@@ -18,7 +18,7 @@ res_mat_mutated <- (res_mat
 										)
 )
 ########### Rc and kappa_c over time #########
-cohortXlabel <- bquote("rescaled time (t"~"/"~t[peak]~")")
+cohortXlabel <- bquote("Cohort infection time (t"~"/"~t[peak]~")")
 
 
 res_mat_mutated_3 <- (res_mat_mutated
@@ -52,20 +52,34 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 										)
 )
 
+### kappa
+kappa_Rc <- (res_mat_mutated
+						 |> 	mutate(kappaRc = (varRc/Rc^2))
+						 					 |> 	ggplot()
+							+ geom_line(aes(scaledCohort, kappaRc
+																		, color = B0
+																		))
+										+ geom_hline(yintercept = 1)
+										+ geom_vline(xintercept = 1)
+										+ guides(color = "none") 
+										+ labs(x = cohortXlabel
+													 , y = bquote(kappa)
+										)
+)
+
 ### incidence 
 incidence <- (straightSim |> drop_na() |> mutate(scaledTime = mid_time/tpeak) |>
 								ggplot(aes(scaledTime, inc, color = as.factor(B0)))
 							+ geom_line()
 							+ geom_vline(xintercept = 1)
 							+ labs(x = cohortXlabel
-										 , y = "Incidence"
+										 , y = "Cohort size"
 										 , color = bquote(R[0])
 							)
 )
 
 ############### Final Plot #############
-cohortFig <- (incidence + mu_and_sigma_Rc
-)
+cohortFig <- (incidence   + mu_and_sigma_Rc + kappa_Rc)
 
 print(cohortFig 
 			+ plot_annotation(tag_levels ="a", tag_suffix  = ")")
