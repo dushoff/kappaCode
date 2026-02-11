@@ -5,8 +5,8 @@ library(deSolve)
 library(shellpipes)
 #An attempt to implement V1 of Roswell's manuscript using a deterministic framework
 loadEnvironments()
-cutoffTime<- seq(from=0.1, to = 1.50, by=0.1)
-finTime <- 65
+cutoffTime<- seq(from=0.1, to = 1, by=0.2)
+finTime <- 40
 steps <- 1e4
 gr<- expand.grid(B0 = betaList, cutoffTime = cutoffTime)
 res_mat <- map2_dfr(.x = gr$B0, .y = gr$cutoffTime,

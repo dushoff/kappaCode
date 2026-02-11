@@ -52,6 +52,10 @@ slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R param
 	$(pipeR)
 slowtarget/SimTrunc.Rout: SimTrunc.R params.rda funs.rda
 	$(pipeR)
+slowtarget/check_trunc.Rout: check_trunc.R params.rda funs.rda
+	$(pipeR)
+check_trunc_plot.Rout: PlotTrunc.R plotStyle.R slow/check_trunc.rda params.rda
+	$(pipeR)
 slowtarget/CohortSim.Rout: CohortSim.R params.rda funs.rda
 	$(pipeR)
 RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotVaryingPeakSim.rda params.rda
