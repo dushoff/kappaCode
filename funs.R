@@ -52,7 +52,7 @@ densHist <- function(.data
     geom_point(alpha = 0, aes(group = get(eval(groupVar)))
         # , key_glyph = "point"
     ) +
-    geom_line(aes(alpha = as.numeric(distType == "exp"), group = get(eval(groupVar)))
+    geom_line(aes(alpha = as.numeric(distType == "act"), group = get(eval(groupVar)))
         # , key_glyph = "path"
     ) +
 
@@ -95,7 +95,7 @@ densHist <- function(.data
               , legend.text  = element_text(size = legendFontSize))
     if(!clearFill){
         p <- p + geom_bar(
-		  		aes(alpha = 0.5 * as.numeric(distType != "exp")
+		  		aes(alpha = 0.5 * as.numeric(distType != "act")
 					, width = barWidth
 					, group = get(eval(groupVar))
 				)
