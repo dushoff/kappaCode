@@ -18,7 +18,7 @@ cPlot <- ( IBM_v1_results_rep |> mutate(beta = factor(beta)) |>
           ggplot() +
 	 aes(num_cases, after_stat(prop), fill=beta)
 	+ geom_bar()
-	+ xlab("Secondary cases per infector")
+	+ xlab("Secondary cases")
 	+ ylab("Proportion")
 	+ facet_wrap(~beta ,labeller = labeller(beta = function(x){
 	  label_wrap(x)}))

@@ -69,7 +69,7 @@ kappa_Rc <- (res_mat_mutated
 
 ### incidence 
 incidence <- (straightSim |> drop_na() |> mutate(scaledTime = mid_time/tpeak) |>
-								ggplot(aes(scaledTime, inc, color = as.factor(B0)))
+								ggplot(aes(scaledTime, instantaneous_inc, color = as.factor(B0)))
 							+ geom_line()
 							+ geom_vline(xintercept = 1)
 							+ labs(x = cohortXlabel

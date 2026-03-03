@@ -6,8 +6,7 @@ library(shellpipes)
 #An attempt to implement V1 of Roswell's manuscript using a deterministic framework
 loadEnvironments()
 cutoffTime<- seq(from=0.1, to = 1.50, by=0.1)
-finTime <- 65
-steps <- 1e4
+steps <- 5e3
 gr<- expand.grid(B0 = betaList, cutoffTime = cutoffTime)
 res_mat <- map2_dfr(.x = gr$B0, .y = gr$cutoffTime,
                     .f = function(x,y){v1Stats_trunc(B0 = x
@@ -16,7 +15,7 @@ res_mat <- map2_dfr(.x = gr$B0, .y = gr$cutoffTime,
                                               ,y0=y0
                                               ,cutoffTime = y*peakAssigner(x)
                     													,tpeak = peakAssigner(x)
-                                              ,finTime = finTime
+                                              ,finTime =(y*peakAssigner(x) + 0.1)
                                               ,t0=t0)
 })
 

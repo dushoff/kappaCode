@@ -34,7 +34,7 @@ recFun <- function(x, rPar = "exp"){
 }
 ## HERE
 densHist <- function(.data
-    , xlab = "Cases per case"
+    , xlab = "Secondary cases"
     , ylab = "Density"
     , colorVar = "distParms"
     , colorVals = NULL
@@ -52,7 +52,7 @@ densHist <- function(.data
     geom_point(alpha = 0, aes(group = get(eval(groupVar)))
         # , key_glyph = "point"
     ) +
-    geom_line(aes(alpha = as.numeric(distType == "act"), group = get(eval(groupVar)))
+    geom_line(aes(alpha = as.numeric(distType == "exp"), group = get(eval(groupVar)))
         # , key_glyph = "path"
     ) +
 
@@ -65,7 +65,7 @@ densHist <- function(.data
             , order = 2
             , override.aes = list(
                 linewidth = 0.5
-                , linetype = c("solid", "32")
+                , linetype = c("solid", NA)
                 , shape = 22
                 , size = c(0, 6)
                 , fill = c(NA
@@ -95,7 +95,7 @@ densHist <- function(.data
               , legend.text  = element_text(size = legendFontSize))
     if(!clearFill){
         p <- p + geom_bar(
-		  		aes(alpha = 0.5 * as.numeric(distType != "act")
+		  		aes(alpha = 0.5 * as.numeric(distType != "exp")
 					, width = barWidth
 					, group = get(eval(groupVar))
 				)
@@ -114,8 +114,9 @@ ineq <- function(dat, colorVar = bquote(R[0])
                  , colorVals = betaList){
     dat |>
     ggplot(aes(frac, val, color = distParms, linetype = distType)) +
-    geom_hline(yintercept = 0.8, linewidth = 0.5, color = "grey") +
-    geom_vline(xintercept = 0.2, linewidth = 0.5, color = "grey") +
+    # geom_hline(yintercept = 0.8, linewidth = 0.5, color = "grey") +
+    # geom_vline(xintercept = 0.2, linewidth = 0.5, color = "grey") +
+		geom_point(aes(x=0.2, y=0.8), color = "grey", shape = 4) +
     geom_line(linewidth = 0.6
         #, alpha = 0.8
     ) +
@@ -641,6 +642,7 @@ sim_and_inc <- function(B0=1,  cars = 1, finTime=365,
 		}
 		mid_time <- c(NA, (head(time, -1) + tail(time, -1)) / 2)
 		inc      <- c(NA, diff(cum))/timeStep
+		instantaneous_inc <- c(NA, diff(cum))
 	}))
 }
 

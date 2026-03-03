@@ -7,7 +7,7 @@ library(tidyr)
 library(deSolve)
 library(purrr)
 
-startGraphics(width=10, height=5)
+startGraphics(width=5, height=5)
 
 library(ggplot2); sourceFiles()
 ############### Time Plot ########################
@@ -98,18 +98,17 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 )
 
 ### incidence 
-incidence <- (straightSim |> drop_na() |> mutate(scaledTime = mid_time/tpeak) |>
-								ggplot(aes(scaledTime, inc, color = as.factor(B0)))
+incidence <- (straightSim |> drop_na() |>
+								ggplot(aes(time, B0*x*y, color = as.factor(B0)))
 							+ geom_line()
-							+ geom_vline(xintercept = 1)
-							+ labs(x = cohortXlabel
+							+ labs(x = "time in units of mean infectious period"
 										 , y = "Incidence"
 										 , color = bquote(R[0])
 							)
 )
 
 ############### Final Plot #############
-cohortFig <- (incidence + mu_and_sigma_Rc + kappa_Rc
+cohortFig <- (incidence / mu_and_sigma_Rc / kappa_Rc
 )
 
 print(cohortFig 

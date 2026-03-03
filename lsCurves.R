@@ -24,7 +24,7 @@ for (l in 1:numBeta) {
     
     list_df[[x+2]] <- data.frame(val = val,
                                  frac = frac,
-                                 distType = "secondary",
+                                 distType = "secondary case",
                                  distParms = as.character(l))
   }
   assign( paste0("df_",l),
@@ -37,7 +37,7 @@ for (l in 1:numBeta) {
   df_exp <- 
     data.frame(val = val_exp,
                frac = frac_exp,
-               distType = "activity",
+               distType = "expected infectiousness",
                distParms = as.character(l))
 }
 df<-do.call(rbind,(mget(paste0("df_",1:numBeta))))
