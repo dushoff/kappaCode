@@ -7,7 +7,7 @@ library(tidyr)
 library(deSolve)
 library(purrr)
 
-startGraphics(width=5, height=7)
+startGraphics(width=5, height=3)
 
 library(ggplot2); sourceFiles()
 txlabel <- "Scaled time"
@@ -37,7 +37,7 @@ infectious <- (straightSim  |>
 							)
 )
 ############### Final Plot #############
-cohortFig <- (incidence   / susceptible / infectious)
+cohortFig <- (incidence   + susceptible)
 
 print(cohortFig 
 			+ plot_annotation(tag_levels ="a", tag_suffix  = ")")
