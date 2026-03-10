@@ -62,8 +62,9 @@ RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotV
 RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R plotStyle.R slow/RcTimePlotVaryingPeakObsSim.rda params.rda
 PlotTrunc.Rout: PlotTrunc.R plotStyle.R slow/SimTrunc.rda params.rda
 CohortPlot.Rout: CohortPlot.R plotStyle.R slow/CohortSim.rda params.rda
-TimeEvolutionSim.Rout: TimeEvolutionSim.R  params.rda funs.rda
-TimeEvolution.Rout: TimeEvolution.R plotStyle.R TimeEvolutionSim.rda  params.rda funs.rda
+slowtarget/TimeEvolutionSim.Rout: TimeEvolutionSim.R  params.rda funs.rda
+	$(pipeR)
+TimeEvolution.Rout: TimeEvolution.R plotStyle.R slow/TimeEvolutionSim.rda  params.rda funs.rda
 ## Some helper functions
 ## funs.Rout: funs.R
 
