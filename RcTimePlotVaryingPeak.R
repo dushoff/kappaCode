@@ -19,7 +19,7 @@ res_mat_mutated <- (res_mat
 						 )
 )
 ########### Rc and kappa_c over time #########
-cohortXlabel <- bquote("rescaled time (t"~"/"~t[peak]~")")
+cohortXlabel <- bquote("Rescaled time (t"~"/"~t[peak]~")")
 
 res_mat_mutated_2 <- (res_mat_mutated
 											|>	pivot_longer(cols=c(KRc_bet, totalKRc
@@ -77,7 +77,7 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 														 + geom_vline(xintercept = 1)
 														 + guides(color = "none") 
 														 + labs(x = cohortXlabel
-														 			 , y = "Cases per case"
+														 			 , y = "Secondary cases"
 														 )
 														+ scale_shape_manual(
 											values = c("muRc" = muRcShape, "stdv" = stdvShape)
@@ -91,11 +91,11 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 )
 
 ### incidence 
-incidence <- (straightSim |> drop_na() |> 
-          ggplot(aes(time, inc, color = as.factor(B0)))
+incidence <- (straightSim |> 
+          ggplot(aes(mid_time, instantaneous_inc, color = as.factor(B0)))
         + geom_line()
-        + labs(x = "time in units of mean infectious period"
-               , y = "Incidence"
+        + labs(x = "Time (t)"
+               , y = "Cohort size"
         			 , color = bquote(R[0])
                )
          )

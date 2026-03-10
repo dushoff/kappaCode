@@ -7,7 +7,7 @@ library(tidyr)
 library(deSolve)
 library(purrr)
 
-startGraphics(width=10, height=5)
+startGraphics(width=5, height=5)
 
 library(ggplot2); sourceFiles()
 res_mat <- res_mat |> mutate(across(where(is.list), unlist))
@@ -38,7 +38,7 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 										+ geom_vline(xintercept = 1)
 										+ guides(color = "none") 
 										+ labs(x = cohortXlabel
-													 , y = "Cases per case"
+													 , y = "Secondary cases"
 										)
 										# + scale_shape_manual(
 										# 	values = c("Rc" = muRcShape, "stdv" = stdvShape)
@@ -68,7 +68,7 @@ kappa_Rc <- (res_mat_mutated
 )
 
 ### incidence 
-incidence <- (straightSim |> drop_na() |> mutate(scaledTime = mid_time/tpeak) |>
+incidence <- (straightSim |> mutate(scaledTime = mid_time/tpeak) |>
 								ggplot(aes(scaledTime, instantaneous_inc, color = as.factor(B0)))
 							+ geom_line()
 							+ geom_vline(xintercept = 1)
@@ -79,7 +79,7 @@ incidence <- (straightSim |> drop_na() |> mutate(scaledTime = mid_time/tpeak) |>
 )
 
 ############### Final Plot #############
-cohortFig <- (incidence   + mu_and_sigma_Rc + kappa_Rc)
+cohortFig <- (incidence   / mu_and_sigma_Rc / kappa_Rc)
 
 print(cohortFig 
 			+ plot_annotation(tag_levels ="a", tag_suffix  = ")")

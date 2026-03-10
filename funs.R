@@ -116,7 +116,7 @@ ineq <- function(dat, colorVar = bquote(R[0])
     ggplot(aes(frac, val, color = distParms, linetype = distType)) +
     # geom_hline(yintercept = 0.8, linewidth = 0.5, color = "grey") +
     # geom_vline(xintercept = 0.2, linewidth = 0.5, color = "grey") +
-		geom_point(aes(x=0.2, y=0.8), color = "grey", shape = 4) +
+		geom_point(aes(x=0.2, y=0.8), color = "grey", shape = 4, size = 3) +
     geom_line(linewidth = 0.6
         #, alpha = 0.8
     ) +
@@ -292,7 +292,7 @@ peakAssigner<-function(R0){
 }
 v1Stats_tpeak <- function(B0=1
                           , cohortProp=0.6
-                          , steps=300
+                          , timeStep=0.01
                           , dfun = boxcar
                           , cars = 1
                           , tpeak = 1000
@@ -300,7 +300,7 @@ v1Stats_tpeak <- function(B0=1
                           , cutoffTime = NULL
                           , y0 = 1e-9
                           , t0 = 0){
-  mySim<- sim(B0=B0, timeStep=finTime/steps,
+  mySim<- sim(B0=B0, timeStep=timeStep,
               finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0
   )
   with(mySim, {
@@ -333,7 +333,7 @@ v1Stats_tpeak <- function(B0=1
         total = within + between
         otherCheck = (w-mu^2)
         Finalsize <- finS
-        return(data.frame(stepSize=steps
+        return(data.frame(timeStep=timeStep
                           , B0 = B0
                           , finTime=finTime
                           , cutoffTime=cuttime
@@ -525,20 +525,21 @@ v1Stats_tpeak_obs <- function(B0=1
     })
   })}
 v1Stats_trunc <- function(B0=1
-																, steps=300
+																, timeStep=0.1
 																, dfun = boxcar
 																, cars = 1
 																, finTime = 365
 																, cutoffTime = NULL
 																, tpeak = 100
 																, y0 = 1e-9
-																, t0 = 0){
-	mySim<- sim(B0=B0, timeStep=finTime/steps,
+																, t0 = 0
+																, tol =2){
+	mySim<- sim(B0=B0, timeStep=timeStep,
 							finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0
 	)
 	with(mySim, {
-		maxCohort <- t0 + cutoffTime - 2*finTime/steps #to avoid 
-		stopifnot(maxCohort > finTime/steps)
+		maxCohort <- t0 + cutoffTime - tol*timeStep #to avoid ode from raising error
+		stopifnot(maxCohort >timeStep)
 		ifun <- approxfun(time, B0*y*x, rule=2)
 		cStats <- cohortStats_trunc( B0 = B0,
 																 sdat=mySim,
@@ -564,7 +565,7 @@ v1Stats_trunc <- function(B0=1
 			total = within + between
 			otherCheck = (w-mu^2)
 			Finalsize <- finS
-			return(data.frame(stepSize=steps
+			return(data.frame(timeStep=timeStep
 												, B0 = B0
 												, finTime=finTime
 												, cutoffTime=cutoffTime/tpeak
@@ -649,7 +650,7 @@ sim_and_inc <- function(B0=1,  cars = 1, finTime=365,
 cohortStatsRcPlot <- function(B0=1
 															, cars = 1
 															, cohortProp=0.6
-															, steps=300
+															, timeStep=0.01
 															, y0 = 1e-9
 															, finTime = 365
 															, stopTime = 100
@@ -657,7 +658,7 @@ cohortStatsRcPlot <- function(B0=1
 															, t0 = 0
 															
 ){
-	sdat<- sim(B0=B0,timeStep=finTime/steps,
+	sdat<- sim(B0=B0,timeStep=timeStep,
 						 finTime=finTime, dfun=dfun, cars=cars, y0=y0, t0=t0
 	)
 	sfun <- approxfun(sdat$time, sdat$x, rule=2)

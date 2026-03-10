@@ -10,9 +10,9 @@ library(purrr)
 startGraphics(width=5, height=3)
 
 library(ggplot2); sourceFiles()
-txlabel <- "Scaled time"
+txlabel <- "Time"
 incidence <- (straightSim |> drop_na() |> 
-								ggplot(aes(time, B0*x*y, color = as.factor(B0)))
+								ggplot(aes(mid_time, inc, color = as.factor(B0)))
 							+ geom_line()
 							+ labs(x = txlabel
 										 , y = "Incidence"
