@@ -75,7 +75,7 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 										+ geom_vline(xintercept = 1)
 										+ guides(color = "none") 
 										+ labs(x = cohortXlabel
-													 , y = "Expected infectiousness"
+													 , y = "Expected\ninfectiousness"
 										)
 										+ scale_shape_manual(
 											values = c("muRc" = muRcShape, "stdv" = stdvShape)
