@@ -1,10 +1,13 @@
+.libPaths("/home/aghaeian/R/library")
 library(dplyr)
 library(purrr)
-library(tidyr)
+#library(tidyr)
 library(deSolve)
-library(shellpipes)
+#library(shellpipes)
 #An attempt to implement V1 of Roswell's manuscript using a deterministic framework
-loadEnvironments()
+#loadEnvironments()
+source("funs.R")
+source("params.R")
 timeStep <- 0.0002
 min_cutoff <- 0.1
 max_cutoff <- 1.5
@@ -31,5 +34,6 @@ straightSim <- map_dfr(betaList, function(B0){
    ), B0 = B0, tpeak =peakAssigner(B0) ))
  }
  )
+save.image(file = "RcTimePlotVaryingPeakSimServer.RData")
 
-saveEnvironment()
+#saveEnvironment()

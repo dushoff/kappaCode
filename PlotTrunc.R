@@ -14,22 +14,14 @@ library(ggplot2); sourceFiles()
 res_mat_mutated <- (res_mat
 										|> mutate( B0 = as.factor(B0)
 															 , KRc_within = within/muRc^2
-															 , KRc_bet = between/muRc^2
 															 , stdv = sqrt(totalVRc)
 										)
 )
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("Rescaled time (t"~"/"~t[peak]~")")
 
-# res_mat_mutated_2 <- (res_mat_mutated
-# 											|>	pivot_longer(cols=c(KRc_within, KRc_bet
-# 																						 # ,total_KRc
-# 											)
-# 											, names_to = "source"
-# 											, values_to = "KRc_splitted" )
-# )
 res_mat_mutated_2 <- (res_mat_mutated
-											|>	pivot_longer(cols=c(totalKRc, KRc_bet
+											|>	pivot_longer(cols=c(totalKRc, KRc_within
 											)
 											, names_to = "source"
 											, values_to = "KRc_splitted" )
@@ -48,8 +40,8 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 						 			 , y = bquote(kappa)
 						 )
 						 + scale_shape_manual(
-						 	values = c("KRc_bet" = kbetShape, "totalKRc" = kwithShape)
-						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
+						 	values = c("totalKRc" = kbetShape, "KRc_within" = kwithShape)
+						 	, labels = c("KRc_within" = bquote(kappa["with"])
 						 							# ,"KRc_within" = bquote(kappa["with"])
 						 							  , "totalKRc" = bquote(kappa)
 						 							 
@@ -57,8 +49,8 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 						 	, name = "source"
 						 )
 						 + scale_linetype_manual(
-						 	values = c("KRc_bet" = "solid", "totalKRc" = "dashed")
-						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
+						 	values = c("KRc_within" = "solid", "totalKRc" = "dashed")
+						 	, labels = c("KRc_within" = bquote(kappa["with"])
 						 							# ,"KRc_within" = bquote(kappa["with"])
 						 							, "totalKRc" = bquote(kappa)
 						 )
@@ -83,7 +75,7 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 										+ geom_vline(xintercept = 1)
 										+ guides(color = "none") 
 										+ labs(x = cohortXlabel
-													 , y = "Secondary cases"
+													 , y = "Expected infectiousness"
 										)
 										+ scale_shape_manual(
 											values = c("muRc" = muRcShape, "stdv" = stdvShape)

@@ -11,21 +11,14 @@ startGraphics(width=5, height=5)
 
 library(ggplot2); sourceFiles()
 res_mat <- res_mat |> mutate(across(where(is.list), unlist))
-res_mat_mutated <- (res_mat
-										|> mutate(B0 = as.factor(B0)
-															,stdv = sqrt(varRc)
-															,scaledCohort = cohort/tpeak
+res_mat_mutated <- (res_mat|> mutate(B0 = as.factor(B0)	,stdv = sqrt(varRc), scaledCohort = cohort/tpeak
 										)
 )
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("Cohort infection time (t"~"/"~t[peak]~")")
 
 
-res_mat_mutated_3 <- (res_mat_mutated
-											|>	pivot_longer(cols=c(Rc, stdv)
-																			, names_to = "source"
-																			, values_to = "quantity" )
-)
+res_mat_mutated_3 <- (res_mat_mutated|>	pivot_longer(cols=c(Rc, stdv), names_to = "source", values_to = "quantity" ))
 
 mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 										# + geom_point(aes(scaledCohort, quantity
@@ -38,7 +31,7 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 										+ geom_vline(xintercept = 1)
 										+ guides(color = "none") 
 										+ labs(x = cohortXlabel
-													 , y = "Secondary cases"
+													 , y = "Expected infectiousness"
 										)
 										# + scale_shape_manual(
 										# 	values = c("Rc" = muRcShape, "stdv" = stdvShape)
@@ -54,8 +47,8 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 
 ### kappa
 kappa_Rc <- (res_mat_mutated
-						 |> 	mutate(kappaRc = (varRc/Rc^2))
-						 					 |> 	ggplot()
+						 |>mutate(kappaRc = (varRc/Rc^2))
+										 |>	ggplot()
 							+ geom_line(aes(scaledCohort, kappaRc
 																		, color = B0
 																		))

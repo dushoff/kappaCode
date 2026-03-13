@@ -13,8 +13,7 @@ library(ggplot2); sourceFiles()
 ############### Time Plot ########################
 res_mat_mutated <- (res_mat
 	|> mutate( B0 = as.factor(B0)
-					#	 , KRc_within = within/muRc^2
-						 , KRc_bet = between/muRc^2
+						 , KRc_within = within/muRc^2
 						 , stdv = sqrt(totalVRc)
 						 )
 )
@@ -22,7 +21,7 @@ res_mat_mutated <- (res_mat
 cohortXlabel <- bquote("Rescaled time (t"~"/"~t[peak]~")")
 
 res_mat_mutated_2 <- (res_mat_mutated
-											|>	pivot_longer(cols=c(KRc_bet, totalKRc
+											|>	pivot_longer(cols=c(KRc_within, totalKRc
 																						 # ,total_KRc
 																						 )
 																			, names_to = "source"
@@ -41,18 +40,16 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 													 , y = bquote(kappa)
 										)
 										+ scale_shape_manual(
-						 	values = c("KRc_bet" = kbetShape, "totalKRc" = kwithShape)
-						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
-						 							 #,"KRc_within" = bquote(kappa["with"])
+						 	values = c("KRc_within" = kwithShape, "totalKRc" = kbetShape)
+						 	, labels = c("KRc_within" = bquote(kappa["with"])
 						 							  , "totalKRc" = bquote(kappa)
 						 							 
 						 							 )
 						 	, name = "source"
 						 )
 						 + scale_linetype_manual(
-						 	values = c("KRc_bet" = "solid", "totalKRc" = "dashed")
-						 	, labels = c("KRc_bet" = bquote(kappa["bet"])
-						 							# ,"KRc_within" = bquote(kappa["with"])
+						 	values = c("KRc_within" = "solid", "totalKRc" = "dashed")
+						 	, labels = c("KRc_within" = bquote(kappa["with"])
 						 							  , "totalKRc" = bquote(kappa)
 						 							 
 						 	)
@@ -77,7 +74,7 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 														 + geom_vline(xintercept = 1)
 														 + guides(color = "none") 
 														 + labs(x = cohortXlabel
-														 			 , y = "Secondary cases"
+														 			 , y = "Expected infectiousness"
 														 )
 														+ scale_shape_manual(
 											values = c("muRc" = muRcShape, "stdv" = stdvShape)
