@@ -20,8 +20,7 @@ res_mat_mutated <- (res_mat
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("Rescaled time (t"~"/"~t[peak]~")")
 
-res_mat_mutated_2 <- (res_mat_mutated
-											|>	pivot_longer(cols=c(KRc_within, totalKRc
+res_mat_mutated_2 <- (res_mat_mutated|>	pivot_longer(cols=c(KRc_within, totalKRc
 																						 # ,total_KRc
 																						 )
 																			, names_to = "source"
@@ -35,25 +34,26 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 										+ geom_line(aes(cutoffTime, KRc_splitted, color = B0
 																, linetype = source  ))
 										+ geom_vline(xintercept = 1)
+										+ geom_hline(yintercept = 1)
 										+ guides(color = "none") 
 										+ labs(x = cohortXlabel
 													 , y = bquote(kappa)
 										)
 										+ scale_shape_manual(
-						 	values = c("KRc_within" = kwithShape, "totalKRc" = kbetShape)
-						 	, labels = c("KRc_within" = bquote(kappa["with"])
-						 							  , "totalKRc" = bquote(kappa)
-						 							 
-						 							 )
-						 	, name = "source"
+							values = c("KRc_within" = kwithShape, "totalKRc" = kbetShape)
+							, labels = c("KRc_within" = bquote(kappa["with"])
+													  , "totalKRc" = bquote(kappa)
+													 
+													 )
+							, name = "source"
 						 )
 						 + scale_linetype_manual(
-						 	values = c("KRc_within" = "solid", "totalKRc" = "dashed")
-						 	, labels = c("KRc_within" = bquote(kappa["with"])
-						 							  , "totalKRc" = bquote(kappa)
-						 							 
-						 	)
-						 	, name = "source"
+							values = c("KRc_within" = "solid", "totalKRc" = "dashed")
+							, labels = c("KRc_within" = bquote(kappa["with"])
+													  , "totalKRc" = bquote(kappa)
+													 
+						)
+							, name = "source"
 						 )
 )
 

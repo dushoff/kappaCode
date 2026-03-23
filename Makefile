@@ -47,9 +47,9 @@ rcHist.Rout: slow/IBM_for_histSim.rda params.rda
 ## Evolution of variance over time
 slowtarget/RcTimePlotVaryingPeakSim.Rout: RcTimePlotVaryingPeakSim.R params.rda funs.rda
 	$(pipeR)
-
-slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R params.rda funs.rda
-	$(pipeR)
+# Simulation RcTimePlotVaryingPeakObsSim took so long for timeStep=0.0002, so I ran it on the server
+#slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R params.rda funs.rda
+#	$(pipeR)
 slowtarget/SimTrunc.Rout: SimTrunc.R params.rda funs.rda
 	$(pipeR)
 slowtarget/check_trunc.Rout: check_trunc.R params.rda funs.rda
@@ -58,7 +58,7 @@ check_trunc_plot.Rout: PlotTrunc.R plotStyle.R slow/check_trunc.rda params.rda
 	$(pipeR)
 slowtarget/CohortSim.Rout: CohortSim.R params.rda funs.rda
 	$(pipeR)
-RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotVaryingPeakSim.rda params.rda
+RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotVaryingPeakSimServer.RData params.rda
 RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R plotStyle.R slow/RcTimePlotVaryingPeakObsSim.rda params.rda
 PlotTrunc.Rout: PlotTrunc.R plotStyle.R slow/SimTrunc.rda params.rda
 CohortPlot.Rout: CohortPlot.R plotStyle.R slow/CohortSim.rda params.rda
