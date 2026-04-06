@@ -7,7 +7,7 @@ current: target
 Ignore = target.mk
 
 vim_session:
-	bash -cl "vmt todo.md"
+	bash -ic "vmt todo.md"
 
 ## -include makestuff/perl.def
 
