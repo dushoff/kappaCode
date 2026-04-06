@@ -22,7 +22,7 @@ stackBarplot <- (cohorts
              + geom_bar(stat = "identity"
                         , position = "stack"
                         , width = 0.25)
-             + ylab("Variance in cases per case") 
+             + ylab("Variance in\n expected infectiousness") 
              + xlab(bquote(R[0]))
              )
 
