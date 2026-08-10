@@ -163,7 +163,7 @@ recovered_truescale <- (straightSim  |>  mutate(B0 = as.factor(B0)) |>
 		    )
             )
 ############### Final Plot #############
-cohortFig <- (sus/ recovered/ cumm/ 
+cohortFig <- ( 
              infectious/ mu_and_sigma_Rc / kappa_Rc)
 
 print(cohortFig 
