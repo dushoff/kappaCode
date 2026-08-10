@@ -16,7 +16,7 @@ res_mat <- map2_dfr(.x = gr$B0, .y = gr$cutoffTime,
                                               ,steps=steps
                                               ,y0=y0
                                               ,cutoffTime = y*peakAssigner(x)
-                    													,tpeak = peakAssigner(x)
+                                              ,tpeak = peakAssigner(x)
                                               ,finTime = finTime
                                               ,t0=t0)
 })

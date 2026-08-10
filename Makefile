@@ -54,13 +54,14 @@ slowtarget/SimTrunc.Rout: SimTrunc.R params.rda funs.rda
 	$(pipeR)
 slowtarget/check_trunc.Rout: check_trunc.R params.rda funs.rda
 	$(pipeR)
-check_trunc_plot.Rout: PlotTrunc.R plotStyle.R slow/check_trunc.rda params.rda
-	$(pipeR)
+#check_trunc_plot.Rout: PlotTrunc.R plotStyle.R slow/check_trunc.rda params.rda
+#	$(pipeR)
 slowtarget/CohortSim.Rout: CohortSim.R params.rda funs.rda
 	$(pipeR)
 RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotVaryingPeakSimServer.RData params.rda
 RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R plotStyle.R slow/RcTimePlotVaryingPeakObsSim.rda params.rda
 PlotTrunc.Rout: PlotTrunc.R plotStyle.R slow/SimTrunc.rda params.rda
+chkPlotTrunc.Rout: chkPlotTrunc.R plotStyle.R slow/SimTrunc.rda params.rda
 CohortPlot.Rout: CohortPlot.R plotStyle.R slow/CohortSim.rda params.rda
 slowtarget/TimeEvolutionSim.Rout: TimeEvolutionSim.R  params.rda funs.rda
 	$(pipeR)

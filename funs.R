@@ -373,8 +373,7 @@ cCalc_trunc <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
 	Bcohort<-B0
 	Ri <- Bcohort*sfun(cohort)
 	sTime <- time[time>=cohort & time<stopTime]
-	mom <- cMoments(sTime, sfun, T0=cohort, cars=cars, 
-									B0=B0)
+	mom <- cMoments(sTime, sfun, T0=cohort, cars=cars, B0=B0)
 	with(mom[nrow(mom), ], {
 		if(abs(cumden-1)<tol){
 		Rctot=Rctot/cumden
@@ -396,20 +395,21 @@ cCalc_trunc <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
 	})
 }
 cohortStats_trunc <- function(B0 = 1
-														, sdat = NULL
-														, maxCohort = NULL
-														, dfun = boxcar
-														, cars = 1
-														, stopTime = NULL
-														, ...){
+				, sdat = NULL
+				, maxCohort = NULL
+				, dfun = boxcar
+				, cars = 1
+				, stopTime = NULL
+				, ...){
 	sfun <- approxfun(sdat$time, sdat$x, rule=2)
 	cohorts <- with(sdat, time[time<=maxCohort])
-	return(as.data.frame(t(
-		sapply(cohorts, function(c) cCalc_trunc(sdat$time, cohort=c, sfun=sfun,
-																					tol=1e-4,
-																					cars=cars,
-																					stopTime = stopTime,
-																					B0 = B0
+	return(as.data.frame(t(	sapply(cohorts, function(c) cCalc_trunc(sdat$time,
+                                                                        cohort=c, 
+                                                                        sfun=sfun,
+									tol=1e-4,
+								        cars=cars,
+									stopTime = stopTime,
+									B0 = B0
 		))
 	)))
 }
@@ -434,8 +434,7 @@ cCalc_v1 <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
 	Bcohort<-B0
 	Ri <- Bcohort*sfun(cohort)
 	sTime <- time[time>=cohort & time<stopTime]
-	mom <- cMoments(sTime, sfun, T0=cohort, cars=cars, 
-									B0=B0)
+	mom <- cMoments(sTime, sfun, T0=cohort, cars=cars, B0=B0)
 	with(mom[nrow(mom), ], {
 		Rctot=Rctot
 		RcSS=RcSS
@@ -448,20 +447,16 @@ cCalc_v1 <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
 }
 
 cohortStats_v1 <- function(B0 = 1
-														, sdat = NULL
-														, maxCohort = NULL
-														, dfun = boxcar
-														, cars = 1
-														, stopTime = NULL
-														, ...){
+                          , sdat = NULL
+			  , maxCohort = NULL
+			  , dfun = boxcar
+			  , cars = 1
+			  , stopTime = NULL
+			  , ...){
 	sfun <- approxfun(sdat$time, sdat$x, rule=2)
 	cohorts <- with(sdat, time[time<=maxCohort])
 	return(as.data.frame(t(
-		sapply(cohorts, function(c) cCalc_v1(sdat$time, cohort=c, sfun=sfun, tol=1e-4,
-																					cars=cars,
-																					stopTime = stopTime,
-																					B0 = B0
-		))
+		sapply(cohorts, function(c) cCalc_v1(sdat$time, cohort=c, sfun=sfun, tol=1e-4, cars=cars, stopTime = stopTime, B0 = B0	))
 	)))
 }
 v1Stats_tpeak_obs <- function(B0=1
@@ -470,7 +465,7 @@ v1Stats_tpeak_obs <- function(B0=1
                               , cars = 1
                               , finTime = 365
                               , cutoffTime = NULL
-															, tpeak = 100
+                              , tpeak = 100
                               , y0 = 1e-9
                               , t0 = 0){
   mySim<- sim(B0=B0, timeStep=finTime/steps,
@@ -525,27 +520,25 @@ v1Stats_tpeak_obs <- function(B0=1
     })
   })}
 v1Stats_trunc <- function(B0=1
-																, timeStep=0.1
-																, dfun = boxcar
-																, cars = 1
-																, finTime = 365
-																, cutoffTime = NULL
-																, tpeak = 100
-																, y0 = 1e-9
-																, t0 = 0
-																, tol =2){
-	mySim<- sim(B0=B0, timeStep=timeStep,
-							finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0
-	)
+			  , timeStep=0.1
+			  , dfun = boxcar
+			  , cars = 1
+			  , finTime = 365
+			  , cutoffTime = NULL
+			  , tpeak = 100
+			  , y0 = 1e-9
+			  , t0 = 0
+			  , tol =2){
+	mySim<- sim(B0=B0, timeStep=timeStep, finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0)
 	with(mySim, {
 		maxCohort <- t0 + cutoffTime - tol*timeStep #to avoid ode from raising error
 		stopifnot(maxCohort >timeStep)
 		ifun <- approxfun(time, B0*y*x, rule=2)
 		cStats <- cohortStats_trunc( B0 = B0,
-																 sdat=mySim,
-																 maxCohort=maxCohort, 
-																 stopTime = cutoffTime,
-																 cars=cars)
+					     sdat=mySim,
+					     maxCohort=maxCohort, 
+					     stopTime = cutoffTime,
+					     cars=cars)
 		rcfun <- approxfun(cStats$cohort, cStats$Rc, rule=2)
 		varrcfun <- approxfun(cStats$cohort, cStats$varRc, rule=2)
 		wssfun <- approxfun(cStats$cohort, cStats$RcSS, rule = 2)
@@ -566,18 +559,18 @@ v1Stats_trunc <- function(B0=1
 			otherCheck = (w-mu^2)
 			Finalsize <- finS
 			return(data.frame(timeStep=timeStep
-												, B0 = B0
-												, finTime=finTime
-												, cutoffTime=cutoffTime/tpeak
-												, Finalsize=Finalsize
-												, muRc=mu
-												, within=within
-												, checkWithin = checkV
-												, between=between
-												, withinSS = w
-												, totalVRc = total
-												, totalVRc_simplified = otherCheck
-												, totalKRc=total/mu^2
+					, B0 = B0
+					, finTime=finTime
+					, cutoffTime=cutoffTime/tpeak
+					, Finalsize=Finalsize
+					, muRc=mu
+					, within=within
+					, checkWithin = checkV
+					, between=between
+					, withinSS = w
+					, totalVRc = total
+					, totalVRc_simplified = otherCheck
+					, totalKRc=total/mu^2
 			))
 		})
 	})}
@@ -618,8 +611,7 @@ v1ODE <- function(time, vars, parms){
 	})
 }
 #A better way for calculating incidence tk=(t_i + t_{i+1})/2
-sim_and_inc <- function(B0=1,  cars = 1, finTime=365,
-								timeStep=0.1, dfun=boxcar,  t0 =0, 
+sim_and_inc <- function(B0=1,  cars = 1, finTime=365, timeStep=0.1, dfun=boxcar,  t0 =0, 
 								y0 = 1e-9){
 	x0 <- 1-y0
 	r0 <- 0
@@ -648,27 +640,23 @@ sim_and_inc <- function(B0=1,  cars = 1, finTime=365,
 }
 
 cohortStatsRcPlot <- function(B0=1
-															, cars = 1
-															, cohortProp=0.6
-															, timeStep=0.01
-															, y0 = 1e-9
-															, finTime = 365
-															, stopTime = 100
-															, dfun = boxcar
-															, t0 = 0
+			, cars = 1
+			, cohortProp=0.6
+			, timeStep=0.01
+			, y0 = 1e-9
+			, finTime = 365
+			, stopTime = 100
+			, dfun = boxcar
+			, t0 = 0
 															
 ){
-	sdat<- sim(B0=B0,timeStep=timeStep,
-						 finTime=finTime, dfun=dfun, cars=cars, y0=y0, t0=t0
+	sdat<- sim(B0=B0,timeStep=timeStep, finTime=finTime, dfun=dfun, cars=cars, y0=y0, t0=t0
 	)
 	sfun <- approxfun(sdat$time, sdat$x, rule=2)
 	maxCohort <- min(t0 + cohortProp*finTime, stopTime)
 	cohorts <- with(sdat, time[time<=maxCohort])
 	return(as.data.frame(t(
-		sapply(cohorts, function(c) cCalc(sdat$time, cohort=c, sfun=sfun, 
-																			tol=1e-4,
-																			cars=cars,
-																			B0 = B0
+		sapply(cohorts, function(c) cCalc(sdat$time, cohort=c, sfun=sfun, tol=1e-4, cars=cars, B0 = B0
 		))
 	)
 	)
