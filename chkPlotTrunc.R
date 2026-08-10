@@ -10,7 +10,7 @@ library(purrr)
 startGraphics(width=5, height=14)
 
 library(ggplot2); sourceFiles()
-threshold <- 0.301
+threshold <- 0.201
 ############### Time Plot ########################
 res_mat_mutated <- (res_mat|> filter(cutoffTime <= threshold) |>
                      mutate( B0 = as.factor(B0)
@@ -99,7 +99,8 @@ incidence <- (straightSim |>
 sus <- (straightSim |> filter(time/tpeak < threshold) |> mutate(B0 = as.factor(B0)) |>
 	       ggplot(aes(time/tpeak, x, color = B0))
 	     + geom_line()
-	     + labs(x = cohortXlabel
+	     + scale_y_log10()
+             + labs(x = cohortXlabel
 		  , y = "Sus"
 		  , color = bquote(R[0])
 		    )
@@ -108,6 +109,7 @@ sus <- (straightSim |> filter(time/tpeak < threshold) |> mutate(B0 = as.factor(B
 infectious <- (straightSim |> filter(time/tpeak < threshold) |>  mutate(B0 = as.factor(B0)) |>
 	       ggplot(aes(time/tpeak, y, color = B0))
 	     + geom_line()
+             + scale_y_log10()
 	     + labs(x = cohortXlabel
 		  , y = "Infectious"
 		  , color = bquote(R[0])
@@ -117,8 +119,19 @@ infectious <- (straightSim |> filter(time/tpeak < threshold) |>  mutate(B0 = as.
 recovered <- (straightSim |> filter(time/tpeak < threshold) |>  mutate(B0 = as.factor(B0)) |>
 	       ggplot(aes(time/tpeak, r, color = B0))
 	     + geom_line()
+             + scale_y_log10()
 	     + labs(x = cohortXlabel
 		  , y = "Recovered"
+		  , color = bquote(R[0])
+		    )
+            )
+### total 
+cumm <- (straightSim |> filter(time/tpeak < threshold) |>  mutate(B0 = as.factor(B0)) |>
+	       ggplot(aes(time/tpeak, cum, color = B0))
+	     + geom_line()
+             + scale_y_log10()
+	     + labs(x = cohortXlabel
+		  , y = "total infected"
 		  , color = bquote(R[0])
 		    )
             )
@@ -150,7 +163,8 @@ recovered_truescale <- (straightSim  |>  mutate(B0 = as.factor(B0)) |>
 		    )
             )
 ############### Final Plot #############
-cohortFig <- (sus/ infectious/ mu_and_sigma_Rc / kappa_Rc)
+cohortFig <- (sus/ recovered/ cumm/ 
+             infectious/ mu_and_sigma_Rc / kappa_Rc)
 
 print(cohortFig 
 	+ plot_annotation(tag_levels ="a", tag_suffix  = ")")
