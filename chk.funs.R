@@ -22,7 +22,7 @@ mderivs <- function(time, vars, parms){
   })
 }
 
-cMoments <- function(time, sfun, T0, B0){
+cMoments <- function(time, sfun, T0){
   mom <- as.data.frame(ode(
     y=c(Rc=0, cumden=0, Rctot=0, RcSS=0)
     , func=mderivs
