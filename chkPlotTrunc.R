@@ -7,12 +7,12 @@ library(tidyr)
 library(deSolve)
 library(purrr)
 
-startGraphics(width=5, height=14)
+startGraphics(width=5, height=5)
 
 library(ggplot2); sourceFiles()
-threshold <- 0.201
+
 ############### Time Plot ########################
-res_mat_mutated <- (res_mat|> filter(cutoffTime <= threshold) |>
+res_mat_mutated <- (res_mat |>
                      mutate( B0 = as.factor(B0)
                            , KRc_within = within/muRc^2
 			   , stdv = sqrt(totalVRc)
@@ -29,16 +29,10 @@ res_mat_mutated_2 <- (res_mat_mutated	|>
                      )
 
 
-kappa_Rc <- (ggplot(res_mat_mutated_2)
-             + geom_point(aes(cutoffTime, KRc_splitted, color = B0
-                                        , shape = source
+kappa_Rc <- ( res_mat_mutated_2 |> ggplot(aes(x = frcIpeak, y = KRc_splitted, color = B0))
+             + geom_point(aes( shape = source
                              )
                          )
-             + geom_line(aes(cutoffTime, KRc_splitted, color = B0
-					, linetype = source
-                             )
-                        )
-#	     + geom_vline(xintercept = 1)
 	     + geom_hline(yintercept = 1)
 	     + guides(color = "none") 
 	     + labs(x = cohortXlabel
@@ -51,12 +45,6 @@ kappa_Rc <- (ggplot(res_mat_mutated_2)
 			    )
 		, name = "source"
 				 )
-	     + scale_linetype_manual(
-		values = c("KRc_within" = "solid", "totalKRc" = "dashed")
-		, labels = c("KRc_within" = bquote(kappa["with"])
-			    , "totalKRc" = bquote(kappa)
-			    )
-		, name = "source")		
                                     )
 
 res_mat_mutated_3 <- (res_mat_mutated |>
@@ -65,12 +53,9 @@ res_mat_mutated_3 <- (res_mat_mutated |>
 				, values_to = "quantity" )
                      )
 
-mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
-                   + geom_point(aes(cutoffTime, quantity, color = B0, shape = source) )
-		   + geom_line(aes(cutoffTime, quantity, color = B0, linetype = source))
-		   + geom_hline(yintercept = 1)
-#		   + geom_vline(xintercept = 1)
-		   + guides(color = "none") 
+mu_and_sigma_Rc <- (res_mat_mutated_3 |> ggplot(aes(x = frcIpeak, y= quantity, color = B0))
+                   + geom_point(aes(shape = source))
+#		   + geom_line(aes(linetype = source)) 
 		   + labs(x = cohortXlabel
 			, y = "Expected\ninfectiousness"
 			  )
@@ -78,93 +63,12 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 			values = c("muRc" = muRcShape, "stdv" = stdvShape)
 		      , labels = c("muRc" = bquote(mu), "stdv" = bquote(sigma))
 		      , name = "statistics"
-					)
-		   + scale_linetype_manual(
-			values = c("muRc" = "solid", "stdv" = "dashed")
-			, labels = c("muRc" = bquote(mu), "stdv" = bquote(sigma))
-			, name = "statistics"
-					  )
-                    )
-print(summary(straightSim))
-### incidence 
-incidence <- (straightSim |> 
-	       ggplot(aes(mid_time, instantaneous_inc, color = as.factor(B0)))
-	     + geom_line()
-	     + labs(x = "Time (t)"
-		  , y = "Cohort size"
-		  , color = bquote(R[0])
-		    )
-            )
-
-sus <- (straightSim |> filter(time/tpeak < threshold) |> mutate(B0 = as.factor(B0)) |>
-	       ggplot(aes(time/tpeak, x, color = B0))
-	     + geom_line()
-	     + scale_y_log10()
-             + labs(x = cohortXlabel
-		  , y = "Sus"
-		  , color = bquote(R[0])
-		    )
-            )
-### infectious 
-infectious <- (straightSim |> filter(time/tpeak < threshold) |>  mutate(B0 = as.factor(B0)) |>
-	       ggplot(aes(time/tpeak, y, color = B0))
-	     + geom_line()
-             + scale_y_log10()
-	     + labs(x = cohortXlabel
-		  , y = "Infectious"
-		  , color = bquote(R[0])
-		    )
-            )
+                                        )
+		)
 ### recovered 
-recovered <- (straightSim |> filter(time/tpeak < threshold) |>  mutate(B0 = as.factor(B0)) |>
-	       ggplot(aes(time/tpeak, r, color = B0))
-	     + geom_line()
-             + scale_y_log10()
-	     + labs(x = cohortXlabel
-		  , y = "Recovered"
-		  , color = bquote(R[0])
-		    )
-            )
-### total 
-cumm <- (straightSim |> filter(time/tpeak < threshold) |>  mutate(B0 = as.factor(B0)) |>
-	       ggplot(aes(time/tpeak, cum, color = B0))
-	     + geom_line()
-             + scale_y_log10()
-	     + labs(x = cohortXlabel
-		  , y = "total infected"
-		  , color = bquote(R[0])
-		    )
-            )
-
-sus_truescale <- (straightSim  |> mutate(B0 = as.factor(B0)) |>
-	       ggplot(aes(time, x, color = B0))
-	     + geom_line()
-	     + labs(x = "t"
-		  , y = "Sus"
-		  , color = bquote(R[0])
-		    )
-            )
-### infectious 
-infectious_truescale <- (straightSim  |>  mutate(B0 = as.factor(B0)) |>
-	       ggplot(aes(time, y, color = B0))
-	     + geom_line()
-	     + labs(x = "t"
-		  , y = "Infectious"
-		  , color = bquote(R[0])
-		    )
-            )
-### recovered 
-recovered_truescale <- (straightSim  |>  mutate(B0 = as.factor(B0)) |>
-	       ggplot(aes(time, r, color = B0))
-	     + geom_line()
-	     + labs(x = "t"
-		  , y = "Recovered"
-		  , color = bquote(R[0])
-		    )
-            )
 ############### Final Plot #############
 cohortFig <- ( 
-             infectious/ mu_and_sigma_Rc / kappa_Rc)
+              mu_and_sigma_Rc / kappa_Rc)
 
 print(cohortFig 
 	+ plot_annotation(tag_levels ="a", tag_suffix  = ")")
