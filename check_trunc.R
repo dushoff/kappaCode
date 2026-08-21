@@ -12,13 +12,12 @@ y0 <- 1e-9
 frcIpeak <- 0.1
 
 res_mat <- map_dfr(betaList,
-                   function(x){trunc(B0=x
-                                   , nCohortPerIp=nCohortPerIpeak
-                                   , frcIpeak=frcIpeak
-                                   , y0=y0
-                                    )
-                              } 
-                  )
-
+	function(x){truncSim(B0=x
+		, nCohortPerIp=nCohortPerIpeak
+		, frcIpeak=frcIpeak
+		, y0=y0
+		)
+	} 
+)
 
 saveEnvironment()

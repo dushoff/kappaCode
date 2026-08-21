@@ -1,6 +1,4 @@
 library(shellpipes)
-## HERE
-
 
 peakAssigner<-function(B0, y0 = 1e-9){
   SIRsim<-sim(B0=B0, finTime=100, timeStep=0.0001,  y0 = y0)
@@ -78,9 +76,9 @@ cohortStats <- function(B0 = 1
 return(df)
 }
 
-trunc <- function(B0=1
+truncSim <- function(B0=1
 		 , nCohortPerIp=5000
-		 , frcIpeak = NULL
+		 , frcIpeak
 		 , y0 = 1e-9
 		){
        

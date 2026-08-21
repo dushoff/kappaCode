@@ -9,6 +9,8 @@ library(purrr)
 
 startGraphics(width=5, height=5)
 
+print(res_mat); quit()
+
 library(ggplot2); sourceFiles()
 
 ############### Time Plot ########################
