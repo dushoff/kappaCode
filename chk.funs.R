@@ -106,8 +106,7 @@ truncSim <- function(B0=1
 		moments <- as.data.frame(ode(
 			y=c(finS=0, mu=0, SS=0, V=0, w = 0, checkV = 0)
 			, func=v1ODE
-			, rtol = 1e-10
-                        , atol = 1e-12
+			, rtol = 1e-10, atol = 1e-12
 			, times= sdat[sdat$time <= maxInfCohort, "time"]   # cStats$cohort 
 			, parms=list(ifun=ifun, rcfun=rcfun, varrcfun=varrcfun, wssfun = wssfun)
                                     ) 
