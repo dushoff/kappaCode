@@ -1,6 +1,6 @@
 ## legend guides parameters
 xpos <- 0.85; ypos <- 0.25
-stdvShape <- 19; muRcShape <-8
+stdvShape <- 8; muRcShape <-19
 kwithShape <- 0; kbetShape <- 17
 legendFontSize <- 8; legendTitleFontSize <- 9
 xlabelFontSize <- 10; ylabelFontSize <- 10
