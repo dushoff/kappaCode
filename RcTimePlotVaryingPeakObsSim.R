@@ -18,7 +18,7 @@ res_mat <- map2_dfr(.x = gr$B0, .y = gr$cutoffTime,
 })
 
 straightSim <- map_dfr(betaList, function(B0){
-	return(data.frame(sim_and_inc( B0=B0,
+	return(data.frame(sim( B0=B0,
 				       cars = cars,
 				       t0 = t0,
 				       timeStep=peakAssigner(B0)*max(cutoffTime)/steps,

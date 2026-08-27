@@ -54,7 +54,7 @@ slowtarget/SimTrunc.Rout: SimTrunc.R params.rda funs.rda
 	$(pipeR)
 
 ## Making a simpler example
-slowtarget/check_trunc.Rout: check_trunc.R chk.funs.rda
+slowtarget/check_trunc.Rout: check_trunc.R funs.rda
 	$(pipeR)
 check_trunc_plot.Rout: chkPlotTrunc.R plotStyle.R slow/check_trunc.rda params.rda
 	$(pipeR)

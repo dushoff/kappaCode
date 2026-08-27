@@ -20,4 +20,6 @@ res_mat <- map_dfr(betaList,
 	} 
 )
 
+print(res_mat)
+
 saveEnvironment()

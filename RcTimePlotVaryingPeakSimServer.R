@@ -25,7 +25,7 @@ cutoffTime<- seq(from = min_cutoff, to = max_cutoff, by = cutoff_increment)
 })
 
 straightSim <- map_dfr(betaList, function(B0){
-   return(data.frame(sim_and_inc( B0=B0
+   return(data.frame(sim( B0=B0
                           ,cars = cars
                           ,t0 = t0
                           ,timeStep=timeStep*peakAssigner(B0)

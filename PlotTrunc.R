@@ -28,28 +28,29 @@ res_mat_mutated_2 <- (res_mat_mutated |>
                      )
 
 
-kappa_Rc <- (ggplot(res_mat_mutated_2)
-		 + geom_point(aes(cutoffTime, KRc_splitted, color = B0 , shape = source) )
-		 + geom_line(aes(cutoffTime, KRc_splitted, color = B0  , linetype = source  ))
-		 + geom_vline(xintercept = 1)
-		 + geom_hline(yintercept = 1)
-		 + guides(color = "none") 
-		 + labs(x = cohortXlabel
-		     , y = bquote(kappa)
-		       )
-		 + scale_shape_manual(	
-                      values = c("totalKRc" = kbetShape, "KRc_within" = kwithShape)
-		    , labels = c("KRc_within" = bquote(kappa["with"])
+kappa_Rc <- (res_mat_mutated_2 |> 
+       ggplot(aes(frcIpeak, KRc_splitted, color = B0))
+     + geom_point(aes(shape = source))
+     + geom_line(aes(linetype = source))
+     + geom_vline(xintercept = 1)
+     + geom_hline(yintercept = 1)
+     + guides(color = "none") 
+     + labs(x = cohortXlabel
+          , y = bquote(kappa)
+            )
+     + scale_shape_manual(	
+            values = c("totalKRc" = kbetShape, "KRc_within" = kwithShape)
+          , labels = c("KRc_within" = bquote(kappa["with"])
 				# ,"KRc_within" = bquote(kappa["with"])
-				 , "totalKRc" = bquote(kappa))
-		    , name = "source"
-				     )
-		 + scale_linetype_manual(
-		      values = c("KRc_within" = "solid", "totalKRc" = "dashed")
-		    , labels = c("KRc_within" = bquote(kappa["with"])
-				# ,"KRc_within" = bquote(kappa["with"])
-				, "totalKRc" = bquote(kappa))
-			        , name = "source"
+		     , "totalKRc" = bquote(kappa))
+          , name = "source"
+                      )
+    + scale_linetype_manual(
+           values = c("KRc_within" = "solid", "totalKRc" = "dashed")
+         , labels = c("KRc_within" = bquote(kappa["with"])
+       # ,"KRc_within" = bquote(kappa["with"])
+         , "totalKRc" = bquote(kappa))
+         , name = "source"
                                 )
 						
           )
@@ -61,9 +62,10 @@ res_mat_mutated_3 <- (res_mat_mutated |>
                                    )
                      )
 
-mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
-			+ geom_point(aes(cutoffTime, quantity, color = B0, shape = source))
-			+ geom_line(aes(cutoffTime, quantity, color = B0, linetype = source))
+mu_and_sigma_Rc <- (res_mat_mutated_3 |>
+                          ggplot(aes(frcIpeak, quantity, color = B0))
+			+ geom_point(aes( shape = source))
+			+ geom_line(aes(linetype = source))
 			+ geom_hline(yintercept = 1)
 			+ geom_vline(xintercept = 1)
 			+ guides(color = "none") 
