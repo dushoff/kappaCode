@@ -58,7 +58,8 @@ slowtarget/check_trunc.Rout: check_trunc.R funs.rda
 	$(pipeR)
 check_trunc_plot.Rout: chkPlotTrunc.R plotStyle.R slow/check_trunc.rda params.rda
 	$(pipeR)
-
+withinChk.Rout: withinChk.R plotStyle.R funs.rda
+	$(pipeR)
 slowtarget/CohortSim.Rout: CohortSim.R params.rda funs.rda
 	$(pipeR)
 RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotVaryingPeakSimServer.RData params.rda

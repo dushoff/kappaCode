@@ -5,7 +5,7 @@ library(deSolve)
 library(shellpipes)
 #An attempt to implement V1 of Roswell's manuscript using a deterministic framework
 loadEnvironments()
-nCohortPerIp <- 5000
+nCohortPerIp <- 10000 #Doubling nCohortPerIp to improve numerical issues, but it'll take so long..Ended up running on server
 min_cutoff <- 0.1
 max_cutoff <- 1.5
 cutoff_increment<- 0.1
@@ -18,6 +18,8 @@ res_mat <- map2_dfr(.x = gr$B0, .y = gr$cutoffTime,
                                           y0 = y0
                                                )
 })
+
+print(res_mat)
 
 straightSim <- map_dfr(betaList, function(B0){
   tpeak <-peakAssigner(B0)

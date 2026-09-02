@@ -95,7 +95,7 @@ densHist <- function(.data
               , legend.text  = element_text(size = legendFontSize))
     if(!clearFill){
         p <- p + geom_bar(
-		  		aes(alpha = 0.5 * as.numeric(distType != "act")
+				aes(alpha = 0.5 * as.numeric(distType != "act")
 					, width = barWidth
 					, group = get(eval(groupVar))
 				)
@@ -241,13 +241,11 @@ boxcar <- function(time, vars, parms){
   }
   )
 }
-cohortStats <- function(B0 = 1
-                        , sdat = NULL
-                        , maxCohort = NULL
-                        , cohortProp=0.6
-                        , dfun = boxcar
+cohortStats <- function(B0
+                        , sdat
+                        , maxCohort = 200
                         , cars = 1
-                        , ...){
+                        ){
   sfun <- approxfun(sdat$time, sdat$x, rule=2)
   cohorts <- with(sdat, time[time<=maxCohort])
   return(as.data.frame(t(
@@ -258,37 +256,45 @@ cohortStats <- function(B0 = 1
 }
 
 peakAssigner<-function(R0, y0= 1e-9){
-  SIRsim<-sim(B0=R0, finTime=50, y0 = y0)
+  SIRsim<-sim(B0=R0, finTime=50, y0 = y0, timeStep = 1e-4)
   idx<-which.max(SIRsim$inc)
   #idx<-which.min(abs(SIRsim$x - 1/R0)) this one isn't accurate
   return(SIRsim[idx,"time"])
 }
-v1Stats_tpeak <- function(B0=1
-                          , cohortProp=0.6
-                          , timeStep=0.01
-                          , dfun = boxcar
-                          , cars = 1
-                          , tpeak = 1000
-                          , finTime = 365
-                          , cutoffTime = NULL
-                          , y0 = 1e-9
-                          , t0 = 0){
-  mySim<- sim(B0=B0, timeStep=timeStep,
-              finTime=finTime, dfun=dfun, cars=cars,  y0 =y0, t0=t0
-  )
-  with(mySim, {
-    maxCohort <- t0 + cohortProp*finTime
-    ifun <- approxfun(time, B0*y*x, rule=2)
-    cStats <- cohortStats( B0 = B0,
-                           sdat=mySim,
-                           maxCohort=maxCohort, 
-                           cars=cars)
-    rcfun <- approxfun(cStats$cohort, cStats$Rc, rule=2)
-    varrcfun <- approxfun(cStats$cohort, cStats$varRc, rule=2)
-    wssfun <- approxfun(cStats$cohort, cStats$RcSS, rule = 2)
-    
-    mom <- as.data.frame(ode(
-      y=c(finS=0, mu=0, SS=0, V=0, w = 0, checkV = 0)
+forcst <- function(B0
+                , cohortProp=0.6
+                , cars = 1
+                , nCohortPerIp=500
+                , cutoffTime
+                , y0 = 1e-9
+                , t0 = 0){
+  
+  tpeak <- peakAssigner(B0, y0 = y0)
+  timeStep <- tpeak/nCohortPerIp
+  finTime <- 8*tpeak
+  mySim <- sim(B0=B0
+            , timeStep=timeStep
+            , finTime=finTime
+            , y0 =y0
+             )
+  maxCohort <- t0 + cohortProp*finTime
+  ifun <- approxfun(mySim$time, B0*mySim$y*mySim$x, rule=2)
+  cStats <- cohortStats( B0 = B0,
+                         sdat=mySim,
+                         maxCohort=maxCohort, 
+                         cars=cars)
+  rcfun <- approxfun(cStats$cohort, cStats$Rc, rule=2)
+  varrcfun <- approxfun(cStats$cohort, cStats$varRc, rule=2)
+  wssfun <- approxfun(cStats$cohort, cStats$RcSS, rule = 2)
+  finS0 <- y0
+  mu0 <- cStats$Rc[[1]]
+  w0 <- cStats$RcSS[[1]]
+  V0 <- cStats$varRc[[1]]
+  checkV0 <- cStats$RcSS[[1]] - mu0^2
+  SS0 <- mu0^2  
+  mom <- as.data.frame(ode(
+      #y=c(finS=0, mu=0, SS=0, V=0, w = 0, checkV = 0)
+        y=c(finS=finS0, mu=y0*mu0, SS=y0*SS0, V=y0*V0, w = y0*w0, checkV = y0*checkV0)
       , func=v1ODE
       , times=unlist(cStats$cohort)
       , parms=list(ifun=ifun, rcfun=rcfun, varrcfun=varrcfun,
@@ -325,7 +331,7 @@ v1Stats_tpeak <- function(B0=1
     )
     )
     ))
-  })}
+  }
 cCalc_obs <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
   Bcohort<-B0
   Ri <- Bcohort*sfun(cohort)
@@ -342,7 +348,7 @@ cCalc_obs <- function(time, cohort, sfun, tol=1e-4, cars, stopTime = -4, B0){
     ))
   })
 }
-cCalc_trunc <- function(time, cohort, sfun,  cars, stopTime, B0){
+cCalc_trunc <- function(time, cohort, sfun,  cars=1, stopTime, B0){
 	Bcohort<-B0
 	Ri <- Bcohort*sfun(cohort)
 	sTime <- time[time>=cohort & time<=stopTime]
@@ -363,22 +369,24 @@ cCalc_trunc <- function(time, cohort, sfun,  cars, stopTime, B0){
 }
 
 cohortStats_trunc <- function(B0
-				, sdat
-				, maxInfCohort
-				, cars = 1
-				, stopTime
-				){
+		, sdat
+		, maxInfCohort
+		, cars = 1
+		, stopTime
+		){
 	sfun <- approxfun(sdat$time, sdat$x, rule=2)
 	cohorts <- with(sdat, time[time<=maxInfCohort])
-	return(as.data.frame(t(	sapply(cohorts, function(c) cCalc_trunc(sdat$time,
-                                                                        cohort=c, 
-                                                                        sfun=sfun,
-								        cars=cars,
-									stopTime = stopTime,
-									B0 = B0
-		))
-	)))
+df <- map_dfr(cohorts, function(c){cCalc_trunc(sdat$time
+                                                ,cohort=c
+                                                ,sfun=sfun
+                                              #  ,tol=1e-4
+                                                ,stopTime = stopTime
+                                                ,B0 = B0
+                                                  )}
+                     )
+return(df)
 }
+
 cohortStats_obs <- function(B0 = 1
                             , sdat = NULL
                             , maxCohort = NULL
@@ -504,7 +512,7 @@ v1ODE_obs<-function (time, vars, parms)
   )))
 }
 
-truncSim <- function(B0=1
+truncSim <- function(B0
                  , nCohortPerIp=5000
                  , frcIpeak
                  , y0 = 1e-9
@@ -525,6 +533,7 @@ truncSim <- function(B0=1
                                , maxInfCohort=maxInfCohort
                                , stopTime = frcIpeak*tpeak
                               )
+                #write.csv(cStats,file =paste0("B0_",B0,"frack_",frcIpeak,".csv"))
                 ifun <- approxfun(sdat$time, B0*sdat$y*sdat$x, rule=2)
                 rcfun <- approxfun(cStats$cohort, cStats$Rc, rule=2)
                 varrcfun <- approxfun(cStats$cohort, cStats$varRc, rule=2)
@@ -536,26 +545,31 @@ truncSim <- function(B0=1
                 checkV0 <- cStats$RcSS[[1]] - mu0^2
                 SS0 <- mu0^2
                 moments <- as.data.frame(ode(
-                     #   y=c(finS=finS0, mu=y0*mu0, SS=y0*SS0, V=y0*V0, w = y0*w0, checkV = y0*checkV0)
-                         y=c(finS = 0, mu = 0, SS = 0, V = 0, w = 0, checkV = 0)                      
+                   #To account for the index's contribution
+                          y=c(finS=finS0, mu=y0*mu0, SS=y0*SS0, V=y0*V0, w = y0*w0, checkV = y0*checkV0)
+                       #  y=c(finS = 0, mu = 0, SS = 0, V = 0, w = 0, checkV = 0)                      
                         , func=v1ODE
                         , rtol = 1e-10
                         , atol = 1e-12
-                        , times= sdat[sdat$time <= maxInfCohort, "time"]   # cStats$cohort
+                        , times= sdat[sdat$time <=maxInfCohort, "time"]   # cStats$cohort
                         , parms=list(ifun=ifun, rcfun=rcfun, varrcfun=varrcfun, wssfun = wssfun)
                                     )
                                       )
+               # calculating moments while excluding the tol last cohorts, because their contributions haven't been computed
+               # we include them to have them accounted in the final size
                 mom <- moments[nrow(moments), ]
-                        mu <- mom$mu/mom$finS
-                        SS <- mom$SS/mom$finS
-                        w <- mom$w/mom$finS
-                        checkV <- (mom$checkV/mom$finS)
-                        within <- (mom$V/mom$finS)
-                        between <- (SS-mu^2)
-                        total = within + between
-                        otherCheck = (w-mu^2)
-                        Finalsize <- mom$finS
-                        return(data.frame(timeStep=timeStep
+                Finalsize <- moments[nrow(moments), "finS"]
+                mu <- mom$mu/Finalsize
+                SS <- mom$SS/Finalsize
+                w <- mom$w/Finalsize
+                checkV <- (mom$checkV/Finalsize)
+                within <- (mom$V/Finalsize)
+                between <- (SS-mu^2)
+                total <- within + between
+                otherCheck = (w-mu^2)
+                C1check <- mom$mu/(Finalsize - y0)
+                C2check <- (mom$w + 2*y0*mu0)/(Finalsize - y0)
+                return(data.frame(timeStep=timeStep
                                         , B0 = B0
                                         , finTime=finTime
                                         , frcIpeak=frcIpeak
@@ -568,10 +582,11 @@ truncSim <- function(B0=1
                                         , totalVRc = total
                                         , totalVRc_simplified = otherCheck
                                         , totalKRc=total/mu^2
+                                        , C1check=C1check
+                                        , C2check=C2check
                          ))
 
         }
-
 
 
 v1ODE <- function(time, vars, parms){
@@ -581,7 +596,7 @@ v1ODE <- function(time, vars, parms){
 		varRc <- varrcfun(time)
 		wss <- wssfun(time)
 		return(list(c(  #finS=0, mu=0, SS=0, V=0, w = 0, checkV = 0
-			inc #finS
+			 inc #finS
 			,inc*Rc #mu
 			,inc*Rc*Rc #RSS
 			,inc*varRc #V

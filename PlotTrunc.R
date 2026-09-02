@@ -11,11 +11,12 @@ startGraphics(width=5, height=5)
 
 library(ggplot2); sourceFiles()
 ############### Time Plot ########################
+print(res_mat)
 res_mat_mutated <- (res_mat |> mutate( B0 = as.factor(B0)
-				       , KRc_within = within/muRc^2
-				       , stdv = sqrt(totalVRc)
-				     )
-                   )
+			, KRc_within = within/muRc^2    #uncomment this
+			, stdv = sqrt(totalVRc)
+			)
+                    )
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("Rescaled time (t"~"/"~t[peak]~")")
 
@@ -35,8 +36,8 @@ kappa_Rc <- (res_mat_mutated_2 |>
      + geom_vline(xintercept = 1)
      + geom_hline(yintercept = 1)
      + guides(color = "none") 
-     + labs(x = cohortXlabel
-          , y = bquote(kappa)
+     + labs( x =  cohortXlabel
+           , y = bquote(kappa)
             )
      + scale_shape_manual(	
             values = c("totalKRc" = kbetShape, "KRc_within" = kwithShape)
@@ -69,8 +70,9 @@ mu_and_sigma_Rc <- (res_mat_mutated_3 |>
 			+ geom_hline(yintercept = 1)
 			+ geom_vline(xintercept = 1)
 			+ guides(color = "none") 
-			+ labs(x = cohortXlabel
-			     , y = "Expected\ninfectiousness"
+			+ labs(
+                               x = NULL
+			      ,y = "Expected\ninfectiousness"
 			       )
 			+ scale_shape_manual(
 				values = c("muRc" = muRcShape, "stdv" = stdvShape)
@@ -85,12 +87,17 @@ mu_and_sigma_Rc <- (res_mat_mutated_3 |>
 )
 
 ### incidence 
-incidence <- (straightSim |> ggplot(aes(mid_time, instantaneous_inc, color = as.factor(B0)))
-				+ geom_line()
-				+ labs(x = "Time (t)"
-				     , y = "Cohort size"
-				     , color = bquote(R[0])
-				      )
+incidence <- (straightSim |> 
+                          mutate(tscale = mid_time/tpeak) |>
+                          filter(tscale >= min_cutoff) |>
+                          ggplot(aes(tscale, instantaneous_inc, color = as.factor(B0)))
+			+ geom_point(size = 0.5)
+                        + geom_vline(xintercept = 1)
+			+ labs(x = NULL
+			, y = "Cohort size"
+			, color = bquote(R[0])
+			)
+#                                + scale_y_log10()
              )
 
 ############### Final Plot #############
