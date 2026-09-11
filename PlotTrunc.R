@@ -58,34 +58,18 @@ kappa_Rc <- (res_mat_mutated_2 |>
 						
           )
 
-res_mat_mutated_3 <- (res_mat_mutated |>
-                       pivot_longer(cols=c(muRc, stdv)
-				  , names_to = "source"
-				  , values_to = "quantity" 
-                                   )
-                     )
 
-mu_and_sigma_Rc <- (res_mat_mutated_3 |>
-                          ggplot(aes(frcIpeak, quantity, color = B0))
-			+ geom_point(aes( shape = source))
-			+ geom_line(aes(linetype = source))
+mu_Rc <- (res_mat_mutated |>
+                          ggplot(aes(frcIpeak, muRc, color = B0))
+			+ geom_point()
+			+ geom_line()
 			+ geom_hline(yintercept = 1)
 			+ geom_vline(xintercept = 1)
 			+ guides(color = "none") 
 			+ labs(
                                x = NULL
-			      ,y = "Expected\ninfectiousness"
+			      ,y = "Mean expected\ninfectiousness"
 			       )
-			+ scale_shape_manual(
-				values = c("muRc" = muRcShape, "stdv" = stdvShape)
-				, labels = c("muRc" = bquote(mu), "stdv" = bquote(sigma))
-				, name = "statistics"
-					    )
-			+ scale_linetype_manual(
-				values = c("muRc" = "solid", "stdv" = "dashed")
-				, labels = c("muRc" = bquote(mu), "stdv" = bquote(sigma))
-				, name = "statistics"
-						)
 )
 
 ### incidence 
@@ -103,7 +87,7 @@ incidence <- (straightSim |>
              )
 
 ############### Final Plot #############
-cohortFig <- (incidence / mu_and_sigma_Rc / kappa_Rc)
+cohortFig <- (incidence / mu_Rc / kappa_Rc)
 
 print(cohortFig 
 	+ plot_annotation(tag_levels ="a", tag_suffix  = ")")
