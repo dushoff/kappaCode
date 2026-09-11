@@ -8,20 +8,19 @@ library(deSolve)
 library(purrr)
 
 startGraphics(width=5, height=5)
-
 library(ggplot2); sourceFiles()
 ############### Time Plot ########################
 res_mat_mutated <- (res_mat
 	|> mutate( B0 = as.factor(B0)
-						 , KRc_within = within/muRc^2
-						 , stdv = sqrt(totalVRc)
-						 )
-)
+		, KRc_within = within/muRc^2
+		, stdv = sqrt(totalVRc)
+		  )
+                     )
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("Rescaled time (t"~"/"~t[peak]~")")
 
 res_mat_mutated_2 <- (res_mat_mutated|>	pivot_longer(cols=c(KRc_within, totalKRc
-																						 # ,total_KRc
+					# ,total_KRc
 																						 )
 																			, names_to = "source"
 																			, values_to = "KRc_splitted" )
@@ -88,14 +87,19 @@ mu_and_sigma_Rc <- (ggplot(res_mat_mutated_3)
 )
 
 ### incidence 
-incidence <- (straightSim |> 
-          ggplot(aes(mid_time, instantaneous_inc, color = as.factor(B0)))
-        + geom_line()
-        + labs(x = "Time (t)"
-               , y = "Cohort size"
-        			 , color = bquote(R[0])
-               )
-         )
+incidence <- (straightSim |>
+                          mutate(tscale = mid_time/tpeak) |>
+                          filter(tscale >= min_cutoff) |>
+                          ggplot(aes(tscale, instantaneous_inc, color = as.factor(B0)))
+                        + geom_point(size = 0.5)
+                        + geom_vline(xintercept = 1)
+                        + labs(x = NULL
+                        , y = "Cohort size"
+                        , color = bquote(R[0])
+                        )
+#                                + scale_y_log10()
+             )
+
 
 ############### Final Plot ############
 cohortFig <- (incidence / mu_and_sigma_Rc / kappa_Rc

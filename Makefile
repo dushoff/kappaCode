@@ -62,7 +62,8 @@ withinChk.Rout: withinChk.R plotStyle.R funs.rda
 	$(pipeR)
 slowtarget/CohortSim.Rout: CohortSim.R params.rda funs.rda
 	$(pipeR)
-RcTimePlotVaryingPeak.Rout: RcTimePlotVaryingPeak.R plotStyle.R slow/RcTimePlotVaryingPeakSimServer.RData params.rda
+RcTimePlotVaryingPeak.Rout: PlotTrunc.R plotStyle.R slow/RcTimePlotVaryingPeakSim.rda params.rda
+	$(pipeR)
 RcTimePlotVaryingPeakObs.Rout: RcTimePlotVaryingPeakObs.R plotStyle.R slow/RcTimePlotVaryingPeakObsSim.rda params.rda
 PlotTrunc.Rout: PlotTrunc.R plotStyle.R slow/SimTrunc.rda params.rda
 chkPlotTrunc.Rout: chkPlotTrunc.R plotStyle.R slow/SimTrunc.rda params.rda

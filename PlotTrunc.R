@@ -15,6 +15,8 @@ print(res_mat)
 res_mat_mutated <- (res_mat |> mutate( B0 = as.factor(B0)
 			, KRc_within = within/muRc^2    #uncomment this
 			, stdv = sqrt(totalVRc)
+			, frcIpeak = if("frcIpeak" %in% names(res_mat)){ frcIpeak 
+                                     }else{cutoffTime}
 			)
                     )
 ########### Rc and kappa_c over time #########

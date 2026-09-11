@@ -77,10 +77,10 @@ densHist <- function(.data
             )
         )
     ) +
-    scale_fill_brewer(palette = "Dark2", name = colorLab, labels = colorVals
+    scale_fill_viridis_d(option = "D", name = colorLab, labels = colorVals
         , guide = guide_legend(order = 1)
     ) +
-    scale_color_brewer(palette = "Dark2", name = colorLab, labels = colorVals
+    scale_color_viridis_d(option = "D", name = colorLab, labels = colorVals
         , guide = guide_legend(order = 1)
     ) +
     scale_size_area() +
@@ -121,7 +121,7 @@ ineq <- function(dat, colorVar = bquote(R[0])
         #, alpha = 0.8
     ) +
     theme_classic() +
-    scale_color_brewer(palette = "Dark2", name = colorVar
+    scale_color_viridis_d(option = "D", name = colorVar
                        , labels = colorVals
                        , guide = "none") +
     labs(x = "Fraction of infectors (ranked)"

@@ -22,7 +22,7 @@ cPlot <- ( IBM_v1_results_rep |> mutate(beta = factor(beta)) |>
 	+ ylab("Proportion")
 	+ facet_wrap(~beta ,labeller = labeller(beta = function(x){
 	  label_wrap(x)}))
-+ scale_fill_brewer(palette = "Dark2")
++ scale_fill_viridis_d(option = "D")
 + guides(fill= "none")
 )
 rcHistplot<- cPlot

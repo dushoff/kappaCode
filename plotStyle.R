@@ -1,4 +1,6 @@
+
 ## legend guides parameters
+
 xpos <- 0.85; ypos <- 0.25
 stdvShape <- 8; muRcShape <-19
 kwithShape <- 0; kbetShape <- 17
@@ -26,10 +28,10 @@ update_geom_defaults("point", list(
   size = 1.5
 ))
 scale_colour_discrete <- function(...) {
-  ggplot2::scale_colour_brewer(palette = "Dark2", ...)
+  ggplot2::scale_colour_viridis_d(option = "D", ...)
 }
 
 scale_fill_discrete <- function(...) {
-  ggplot2::scale_fill_brewer(palette = "Dark2", ...)
+ ggplot2::scale_fill_viridis_d(option = "D", ...)
 }
 

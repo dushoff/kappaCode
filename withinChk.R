@@ -37,7 +37,7 @@ mySim <- data.frame(sim( B0=B0
 incidence <- (mySim |>
                           mutate(tscale = mid_time) |>
                           ggplot(aes(tscale, instantaneous_inc, color = as.factor(B0)))
-                        + geom_point(size = 0.5)
+                        + geom_line()
                         + geom_vline(xintercept = tpeak*c(0.8,0.9,1,1.1))
                         + labs(x = NULL
                         , y = "Cohort size"
@@ -48,7 +48,7 @@ incidence <- (mySim |>
 
 varR <- (df |> ggplot(aes(x = cohort, y = varRc, color = frc))
               + geom_line()
-              + geom_vline(xintercept = tpeak*c(0.8,0.9,1,1.1))
+              + geom_vline(xintercept = tpeak*c(0.7,0.8,0.9,1,1.1))
               )
 cohortFig <- (incidence / varR)
 
