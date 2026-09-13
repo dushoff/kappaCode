@@ -5,17 +5,18 @@ library(deSolve)
 library(shellpipes)
 #An attempt to implement V1 of Roswell's manuscript using a deterministic framework
 loadEnvironments()
-nCohortPerIp <- 5000
+finTime2Ipeak <- 8
+nCohortPerIp <- 10000
 min_cutoff <- 0.1
 max_cutoff <- 1.5
 cutoff_increment<- 0.1
 cutoffTime<- seq(from = min_cutoff, to = max_cutoff, by = cutoff_increment)
  res_mat <- map_dfr(betaList, function(x){forcst(B0 = x
                                               ,cars=cars
-                                              ,cohortProp=cohortProp
+                                              ,finTime2Ipeak=finTime2Ipeak
                                               ,nCohortPerIp=nCohortPerIp
                                               ,y0=y0
-                                              ,cutoffTime = cutoffTime
+                                              ,frcIpeak = cutoffTime
                                               )
 })
 

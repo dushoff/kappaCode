@@ -264,20 +264,21 @@ peakAssigner<-function(R0, y0= 1e-9){
 forcst <- function(B0
                 , cohortProp=0.6
                 , cars = 1
+                , finTime2Ipeak = 8
                 , nCohortPerIp=500
-                , cutoffTime
+                , frcIpeak
                 , y0 = 1e-9
                 , t0 = 0){
   
   tpeak <- peakAssigner(B0, y0 = y0)
   timeStep <- tpeak/nCohortPerIp
-  finTime <- 8*tpeak
+  finTime <- finTime2Ipeak*tpeak
   mySim <- sim(B0=B0
             , timeStep=timeStep
             , finTime=finTime
             , y0 =y0
              )
-  maxCohort <- t0 + cohortProp*finTime
+  maxCohort <- t0 + max(frcIpeak)*tpeak
   ifun <- approxfun(mySim$time, B0*mySim$y*mySim$x, rule=2)
   cStats <- cohortStats( B0 = B0,
                          sdat=mySim,
@@ -300,7 +301,7 @@ forcst <- function(B0
       , parms=list(ifun=ifun, rcfun=rcfun, varrcfun=varrcfun,
                     wssfun = wssfun))
     )
-    return(((map_dfr(cutoffTime, function(cuttime){
+    return(((map_dfr(frcIpeak, function(cuttime){
       idx <- which.min(abs(mom$time - tpeak*cuttime))
       with(mom[idx, ], {
         mu <- mu/finS
@@ -315,7 +316,7 @@ forcst <- function(B0
         return(data.frame(timeStep=timeStep
                           , B0 = B0
                           , finTime=finTime
-                          , cutoffTime=cuttime
+                          , frcIpeak=cuttime
                           , Finalsize=Finalsize
                           , muRc=mu
                           , within=within
