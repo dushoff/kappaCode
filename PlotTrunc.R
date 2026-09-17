@@ -68,7 +68,7 @@ mu_Rc <- (res_mat_mutated |>
 			+ guides(color = "none") 
 			+ labs(
                                x = NULL
-			      ,y = "Mean expected\ninfectiousness"
+				,y = "Mean realized\ninfections"
 			       )
 )
 

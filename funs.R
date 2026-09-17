@@ -112,6 +112,16 @@ densHist <- function(.data
 # now we want to build the inequality plots
 ineq <- function(dat, colorVar = bquote(R[0])
                  , colorVals = betaList){
+   # make the color black if the curves overlap, dkn why is behaving weired for secondary case
+   # for now, I only plotted distType = "expected infectiousness"
+  overlap <- dat |>
+  group_by(frac, distType) |>
+  summarise(
+    val_black = if (
+      (max(val) - min(val)) <= 1e-9
+    ) mean(val) else NA_real_,
+    .groups = "drop"
+  )  
     dat |>
     ggplot(aes(frac, val, color = distParms, linetype = distType)) +
     # geom_hline(yintercept = 0.8, linewidth = 0.5, color = "grey") +
@@ -120,6 +130,15 @@ ineq <- function(dat, colorVar = bquote(R[0])
     geom_line(linewidth = 0.6
         #, alpha = 0.8
     ) +
+    geom_line(
+    data = overlap |> filter(distType =="expected infectiousness"),
+    aes(x = frac, y = val_black,
+        linetype = distType),
+    color = "black",
+    inherit.aes = FALSE,
+    na.rm = TRUE,
+    show.legend = FALSE
+  ) +
     theme_classic() +
     scale_color_viridis_d(option = "D", name = colorVar
                        , labels = colorVals
