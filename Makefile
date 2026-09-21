@@ -87,7 +87,7 @@ Ignore += makestuff
 msrepo = https://github.com/dushoff
 
 ## ln -s ../makestuff . ## Do this first if you want a linked makestuff
-Makefile: makestuff/01.stamp
+Makefile: makestuff/02.stamp
 makestuff/%.stamp: | makestuff
 	- $(RM) makestuff/*.stamp
 	cd makestuff && $(MAKE) pull
