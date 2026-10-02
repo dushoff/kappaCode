@@ -44,6 +44,20 @@ slowtarget/IBM_for_histSim.Rout: IBM_for_histSim.R IBM_for_hist.rda params.rda
 rcHist.Rout: slow/IBM_for_histSim.rda params.rda
 
 
+
+## IBM for SEIR?
+
+SEIR_IBM_for_hist.Rout: SEIR_IBM_for_hist.R funs.rda  params.rda
+	$(pipeR)
+
+slowtarget/SEIR_IBM_for_histSim.Rout: SEIR_IBM_for_histSim.R SEIR_IBM_for_hist.rda params.rda
+	$(pipeR)
+
+SEIRrcHist.Rout: slow/SEIR_IBM_for_histSim.rda params.rda
+
+SEIR_RcAverage.Rout: SEIR_RcAverage.R SEIRrcHist.rds 
+	$(pipeR)
+
 ## Evolution of variance over time
 slowtarget/RcTimePlotVaryingPeakSim.Rout: RcTimePlotVaryingPeakSim.R params.rda funs.rda
 	$(pipeR)
