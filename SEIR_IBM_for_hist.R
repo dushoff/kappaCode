@@ -7,23 +7,13 @@ library(pracma)
 # library(purrr)
 library(tidyr)
 loadEnvironments()
-
+options(warn = 1)
 IBM_hist_SEIR<- function(setBeta = 1.5, seed = 10, popSize = 1e4, tProb = 1
-                  ,tMax = 2e3){
+                  ,tMax = 2e3
+                  , setLambda = 1.0){
 #This script is based on IBM_for_hist.R
 set.seed(seed)
 results <- vector("list", 50)
-thr_counter <-1
-threshold <- seq(0.1,1,by=0.1)
-results_infected <- vector("list", length(threshold))
-log_thr_counter <-1
-log_threshold <- logspace(-4,0,5)
-results_log_infected <- vector("list", length(log_threshold))
-Ifinal<-popSize*finalSize(setBeta)
-flag <- 1 #flag is one if the total infected individuals is less than Ifinal
-log_flag <-1
-# combn is very slow with big numbers
-# looks good https://stackoverflow.com/a/49153855/8400969
 comb2.int <- function(n, rep = FALSE){
   if(!rep){
     # e.g. n=3 => (1,2), (1,3), (2,3)
@@ -63,18 +53,15 @@ contInd <- sample( 1:length(rateFrame$mixRate)
                             , replace = TRUE
                             , rateFrame$mixRate)
 
-# save as a data.frame (will be longer than necessary)
 contactOrder <- cbind(t(rateInds)[ contInd,], contTime)
-
-
 
 # We will also pre-compute recovery times
 # Default assumes an exponential duration distribution
 
 recDelay <-  rexp(1:popSize, rate = setGamma)
- #exposed period is the same as the infectious period
-exposedPeriod <-  rexp(1:popSize, rate = setGamma)
-# initialize infectious time and exposed time  with a large number for logical testing
+ #exposed duration is also exponential with rate setLambda
+exposedPeriod <-  rexp(1:popSize, rate = setLambda)
+# initialize infectious time and exposed time  with  large numbers for logical testing
 iTime <- rep(tMax, popSize)
 exposedTime <- rep(tMax, popSize)
 # map integers to infection status
@@ -89,6 +76,7 @@ states[p0]<- Istate
 
 # start the clock
 tCur <- 0
+# assuming the initial index was exposed and simultaneously infected at tCur
 iTime[p0] <- tCur
 exposedTime[p0] <- tCur
 # keep track of cases per person and counts for each state
@@ -97,19 +85,17 @@ caseTally <- rep(0, popSize)
 I <- sum(states == Istate)
 S <- sum(states == Sstate)
 E <- sum(states == Estate)
-# and Days
-dayz <- 1
-# half Days
-halfDayz <- 1
-####
+
 # Think about if this gets params as inputs too.
 for(i in 1:nrow(contactOrder)){
   co <- contactOrder[i,]
 # a bunch of stuff I want to do for each row...
-  
   tCur <- co[3]
   if (tCur > tMax)
+    {
+    warning("time is up")
     break
+  }
     # check if anyone is exposed
   exposed <- states[co[1:2]] == Estate
   if(any(exposed)){
@@ -134,11 +120,6 @@ for(i in 1:nrow(contactOrder)){
     states[co[1:2]][recVec] <- Rstate
     # if one is infectious AND one is susceptible, lots to do
     if(any(states[co[1:2]] == Istate) & any(states[co[1:2]] == Sstate)){
-      # first flip the coin
-	  ## set tProb to 1 for now; more efficient and doesn't matter in this version
-     if(rbinom(1,1, prob = tProb)){
-       # cat("infection")
-       # update cumulative state counters
         E <- E + 1
         S <- S - 1
         # count the win
@@ -148,34 +129,20 @@ for(i in 1:nrow(contactOrder)){
         exposedTime[co[1:2][states[co[1:2]] == Sstate]] <- tCur
         # update the states
         states[co[1:2][states[co[1:2]] == Sstate]] <- Estate
-    }
+    
   }
   }
-  if(floor(tCur)>=dayz){
-    dayz <- dayz + 1
-  }
+
   if(S == 0 || (I == 0 && E == 0)){
-   cat(paste0("END!  day ", dayz
-              , "; contact # ", i
-              ,",  I = ", I
-              , ", S = " , S
-              , ", maxCases = ", max(caseTally)
-              , ", beta = ", setBeta
-              , "\n")
- )
-   finalDay <- data.frame(Values = c(dayz, halfDayz, sum(states!=Sstate)/Ifinal,
-                                     setBeta),
-                          Variables = c("day", "half-days",
-                                        "proportionNotSusceptible",
-                                        "beta"))
-   warning("no one is neither infected nor exposed  anymore")
+
+warning("no one is neither infected nor exposed anymore")
    
    break}
 }
 df <- as.data.frame(table(caseTally[states !=Sstate]))  
 names(df) <- c("num_cases", "count")
 df$beta <- setBeta
-
+df$lambda <- setLambda
 # q uestionable move to save storage
 rm(list= c("rateFrame", "rateInds", "contactOrder", "contInd", "contTime" ))
 
