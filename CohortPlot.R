@@ -6,7 +6,7 @@ library(patchwork)
 library(tidyr)
 library(deSolve)
 library(purrr)
-startGraphics(width=5, height=5)
+startGraphics(width=5, height=6)
 library(ggplot2); sourceFiles()
 
 res_mat <- res_mat |> mutate(across(where(is.list), unlist))
@@ -18,8 +18,6 @@ res_mat_mutated <- (res_mat|> mutate(B0 = as.factor(B0)	,
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("Cohort infection time (t"~"/"~t[peak]~")")
 
-
-res_mat_mutated_3 <- (res_mat_mutated|>	pivot_longer(cols=c(Rc, stdv), names_to = "source", values_to = "quantity" ))
 
 mu_Rc <- (ggplot(res_mat_mutated)
 		    + geom_line(aes(scaledCohort, Rc, color = B0))
@@ -38,14 +36,19 @@ kappa_Rc <- (res_mat_mutated
 				+ geom_hline(yintercept = 1)
 				+ geom_vline(xintercept = 1)
 				+ guides(color = "none") 
-				+ labs(x = cohortXlabel
-				     , y = bquote(kappa)
+				+ labs(x = NULL
+				     ,  y = bquote(atop("unweighted",kappa["within"]))
 					)
             )
 
 ### incidence 
-incidence <- (straightSim |> mutate(scaledTime = mid_time/tpeak) |>
-			ggplot(aes(scaledTime, instantaneous_inc, color = as.factor(B0)))
+outbreak <- (straightSim |> group_by(B0) |> arrange(time, .by_group = TRUE)
+                     |> mutate(cohortSize = lead(instantaneous_inc),
+                               scaledTime = time/tpeak) |>
+                       ungroup() |> mutate(B0 = as.factor(B0))
+)
+incidence <- (outbreak |> 
+			ggplot(aes(scaledTime, cohortSize, color = B0))
 			+ geom_line()
 			+ geom_vline(xintercept = 1)
 			+ labs(x = NULL
@@ -53,13 +56,34 @@ incidence <- (straightSim |> mutate(scaledTime = mid_time/tpeak) |>
 			, color = bquote(R[0])
 			)
             )
+### adding panels d
+merged_df <- merge(straightSim, res_mat,
+                   by.x = c("time","B0", "tpeak") ,
+                   by.y = c("cohort", "B0", "tpeak"))
 
+moveup_merged_df <- (merged_df |> group_by(B0) |> arrange(time, .by_group = TRUE)
+                      |> mutate(cohortSize = lead(instantaneous_inc),
+                                within_kp = cohortSize*varRc/Rc^2,
+                                scaled_time = time/tpeak) |>
+                         ungroup() |> mutate(B0 = as.factor(B0))
+)
+
+weighted_Within_kappa <- (moveup_merged_df |> 
+                          ggplot(aes(scaled_time, within_kp, color = B0))
+                        + geom_line()
+                        + geom_vline(xintercept = 1)
+                        + labs(x = cohortXlabel,
+                               y = bquote(atop("weighted", kappa["within"]))
+                        )
+                        + guides(color = "none") 
+                        
+)
 ############### Final Plot #############
-cohortFig <- (incidence   / mu_Rc / kappa_Rc)
+cohortFig <- (incidence   / mu_Rc / kappa_Rc / weighted_Within_kappa)
 
 print(cohortFig
      + plot_annotation(tag_levels ="a", tag_suffix  = ")")
      + plot_layout(guides = "collect")
      )
 
-#saveEnvironment()
+

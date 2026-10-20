@@ -84,7 +84,7 @@ chkPlotTrunc.Rout: chkPlotTrunc.R plotStyle.R slow/SimTrunc.rda params.rda
 CohortPlot.Rout: CohortPlot.R plotStyle.R slow/CohortSim.rda params.rda
 slowtarget/TimeEvolutionSim.Rout: TimeEvolutionSim.R  params.rda funs.rda
 	$(pipeR)
-TimeEvolution.Rout: TimeEvolution.R plotStyle.R slow/TimeEvolutionSim.rda  params.rda funs.rda
+TimeEvolutionStack.Rout: TimeEvolutionStack.R plotStyle.R stackbar.rds  slow/TimeEvolutionSim.rda   params.rda funs.rda
 ## Some helper functions
 ## funs.Rout: funs.R
 
