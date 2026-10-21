@@ -24,6 +24,8 @@ stackBarplot <- (cohorts
                         , width = 0.25)
              + ylab("Variance in\n expected infectiousness") 
              + xlab(bquote(R[0]))
+             + scale_fill_manual(values = c("between" = "grey70",
+                                            "within" = "black"))
              )
 
 print(stackBarplot)
