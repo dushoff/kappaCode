@@ -41,6 +41,7 @@ densHist <- function(.data
     , colorLab = NULL
     , groupVar = NULL
     , clearFill = FALSE
+    , man_col
 ){
     if(is.null(colorLab)){colorLab <- colorVar}
     p <- ggplot(.data, aes(x = x
@@ -77,11 +78,11 @@ densHist <- function(.data
             )
         )
     ) +
-    scale_fill_viridis_d(option = "D", name = colorLab, labels = colorVals
-        , guide = guide_legend(order = 1)
+    scale_fill_manual(name = colorLab, labels = colorVals,
+        values = man_col, guide = guide_legend(order = 1)
     ) +
-    scale_color_viridis_d(option = "D", name = colorLab, labels = colorVals
-        , guide = guide_legend(order = 1)
+    scale_color_manual(name = colorLab, labels = colorVals,
+        values = man_col, guide = guide_legend(order = 1)
     ) +
     scale_size_area() +
     theme_classic() +
@@ -111,7 +112,7 @@ densHist <- function(.data
 
 # now we want to build the inequality plots
 ineq <- function(dat, colorVar = bquote(R[0])
-                 , colorVals = betaList){
+                 , colorVals = act, man_col){
    # make the color black if the expected infectiousness curves overlap
   overlap <- dat |> filter(distType =="expected infectiousness") |>
   group_by(frac, distType) |>
@@ -120,7 +121,7 @@ ineq <- function(dat, colorVar = bquote(R[0])
       (max(val) - min(val)) <= 1e-12
     ) mean(val) else NA_real_,
     .groups = "drop"
-  )  
+  )
     dat |>
     ggplot(aes(frac, val, color = distParms, linetype = distType)) +
     # geom_hline(yintercept = 0.8, linewidth = 0.5, color = "grey") +
@@ -139,8 +140,9 @@ ineq <- function(dat, colorVar = bquote(R[0])
     show.legend = FALSE
   ) +
     theme_classic() +
-    scale_color_viridis_d(option = "D", name = colorVar
+    scale_color_manual(name = colorVar
                        , labels = colorVals
+                       , values = man_col
                        , guide = "none") +
     labs(x = "Fraction of infectors (ranked)"
         , y = "\nCumulative fraction of new infections"
