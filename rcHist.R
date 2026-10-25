@@ -43,6 +43,7 @@ cPlot <- ( IBM_v1_results_rep |> mutate(beta = factor(beta)) |>
 	            vjust = 1.15)
 + scale_fill_viridis_d(option = "D")
 + guides(fill= "none")
++ theme(panel.grid = element_blank())
 )
 rcHistplot<- cPlot
 print(cPlot)

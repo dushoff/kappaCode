@@ -6,8 +6,8 @@ gamm <- 1
 act <- c(1/gamm, betaList/gamm) 
 numBeta <- length(act)
 # Keeping the color order correct in the presence of R0 =1
-col3 <- c("#433E85FF","#2BB07FFF","#440154FF","#FDE725FF")
-man_col <- setNames(col3,
+col3 <- c("#E69F00FF","#21908C","#440154FF","#FDE725FF")
+man_col <- setNames(col3, 
                     c("1", "3","2","4")
 )
 
