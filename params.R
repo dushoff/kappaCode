@@ -2,15 +2,8 @@ library(shellpipes)
 
 betaList <- c(1.5, 3, 8)    # extend as needed
 gamm <- 1
-# adding R0 = 1 suggested by Dr. Dushoff
-act <- c(1/gamm, betaList/gamm) 
+act <- c(betaList/gamm) 
 numBeta <- length(act)
-# Keeping the color order correct in the presence of R0 =1
-col3 <- c("#E69F00FF","#21908C","#440154FF","#FDE725FF")
-man_col <- setNames(col3, 
-                    c("1", "3","2","4")
-)
-
 
 steps<-5e3
 cars<-1

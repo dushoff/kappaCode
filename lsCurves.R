@@ -46,7 +46,7 @@ df<-rbind(df,df_exp)
 
 
 ##### plotting section ####
-ineqDeadPlot <- df |> ineq(man_col = man_col)
+ineqDeadPlot <- df |> ineq()
 
 print(ineqDeadPlot 
 	## + theme(legend.position = "none"))
