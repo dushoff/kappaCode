@@ -17,7 +17,7 @@ res_mat_mutated <- (res_mat|> mutate(B0 = as.factor(B0)	,
                    )
 
 ########### Rc and kappa_c over time #########
-cohortXlabel <- bquote("Dimensionless cohort infection time,"~t[i]~"/"~t[peak])
+cohortXlabel <- bquote("Dimensionless cohort infection time, t/"~t[peak])
 
 
 mu_Rc <- (ggplot(res_mat_mutated)
