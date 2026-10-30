@@ -15,7 +15,6 @@ res_mat_mutated <- (res_mat|> mutate(B0 = as.factor(B0)	,
                                      scaledCohort = cohort/tpeak
 				) |> filter(scaledCohort <= maxCohort4Plot)
                    )
-
 ########### Rc and kappa_c over time #########
 cohortXlabel <- bquote("Dimensionless cohort infection time, t/"~t[peak])
 
@@ -25,7 +24,7 @@ mu_Rc <- (ggplot(res_mat_mutated)
 		    + geom_vline(xintercept = 1)
 		    + guides(color = "none") 
 		    + labs(x = NULL
-			 , y = "Mean expected\ninfectiousness"
+			 , y = "Mean expected\n cases per case"
 			   )
                   )
 
