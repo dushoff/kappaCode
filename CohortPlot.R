@@ -8,15 +8,16 @@ library(deSolve)
 library(purrr)
 startGraphics(width=5, height=6)
 library(ggplot2); sourceFiles()
-
+maxCohort4Plot <- 3 # to truncate the plot up to 3tpeak
 res_mat <- res_mat |> mutate(across(where(is.list), unlist))
 res_mat_mutated <- (res_mat|> mutate(B0 = as.factor(B0)	,
                                      stdv = sqrt(varRc),
                                      scaledCohort = cohort/tpeak
-				)
+				) |> filter(scaledCohort <= maxCohort4Plot)
                    )
+
 ########### Rc and kappa_c over time #########
-cohortXlabel <- bquote("Cohort infection time (t"~"/"~t[peak]~")")
+cohortXlabel <- bquote("Dimensionless cohort infection time,"~t[i]~"/"~t[peak])
 
 
 mu_Rc <- (ggplot(res_mat_mutated)
@@ -36,15 +37,16 @@ kappa_Rc <- (res_mat_mutated
 				+ geom_hline(yintercept = 1)
 				+ geom_vline(xintercept = 1)
 				+ guides(color = "none") 
-				+ labs(x = NULL
-				     ,  y = bquote(atop("Unweighted",kappa["within"]))
+				+ labs(x = cohortXlabel
+				     ,  y = "Unweighted\nwithin-cohort\ndispersion"
 					)
             )
 
 ### incidence 
 outbreak <- (straightSim |> group_by(B0) |> arrange(time, .by_group = TRUE)
                      |> mutate(cohortSize = lead(instantaneous_inc),
-                               scaledTime = time/tpeak) |>
+                               scaledTime = time/tpeak) |> 
+                       filter(scaledTime <= maxCohort4Plot) |>
                        ungroup() |> mutate(B0 = as.factor(B0))
 )
 incidence <- (outbreak |> 
@@ -55,46 +57,11 @@ incidence <- (outbreak |>
 			, y = "Cohort size"
 			, color = bquote(R[0])
 			)
-                        + scale_y_continuous(labels = scales::label_scientific())
+     + scale_y_continuous(labels = scales::label_scientific())
             )
-### adding panels d
-merged_df <- merge(straightSim, res_mat,
-                   by.x = c("time","B0", "tpeak") ,
-                   by.y = c("cohort", "B0", "tpeak"))
 
-moveup_merged_df <- (merged_df |> group_by(B0) |> arrange(time, .by_group = TRUE)
-                      |> mutate(cohortSize = lead(instantaneous_inc),
-                                within_kp = cohortSize*varRc/Rc^2,
-                                within_var = cohortSize*varRc,
-                                scaled_time = time/tpeak) |>
-                         ungroup() |> mutate(B0 = as.factor(B0))
-)
-shortSim <- straightSim |> 
-               group_by(B0) |> 
-               summarise(final_size = max(cum), .groups = "drop") |> 
-               mutate(B0 = as.factor(B0))
-moveup_merged_df <- moveup_merged_df |> left_join(shortSim, by = "B0")
-within_variance <- (moveup_merged_df |> 
-                          ggplot(aes(scaled_time, within_var/final_size, color = B0))
-                        + geom_line()
-                        + geom_vline(xintercept = 1)
-                        + labs(x = cohortXlabel,
-                               y = bquote(atop("Weighted", sigma^2["within"]))
-                        )
-                        + guides(color = "none") 
-                       )
-un_within_variance <- (moveup_merged_df |> 
-                          ggplot(aes(scaled_time, varRc, color = B0))
-                        + geom_line()
-                        + geom_vline(xintercept = 1)
-                        + labs(x = cohortXlabel,
-                               y = bquote(atop("UnWeighted", sigma^2["within"]))
-                        )
-                        + guides(color = "none") 
-                        
-)
 ############### Final Plot #############
-cohortFig <- (incidence   / mu_Rc / kappa_Rc / within_variance)
+cohortFig <- (incidence   / mu_Rc / kappa_Rc)
 
 print(cohortFig
      + plot_annotation(tag_levels ="a", tag_suffix  = ")")
