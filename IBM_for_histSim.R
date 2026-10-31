@@ -29,5 +29,5 @@ IBM_v1_results_rep <- IBM_v1_results |> uncount(weights = count,
   mutate(num_cases = as.numeric(as.character(num_cases))
         )
 
-
+s_info <- sessionInfo()
 saveEnvironment()

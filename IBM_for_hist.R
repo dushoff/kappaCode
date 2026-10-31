@@ -170,5 +170,5 @@ rm(list= c("rateFrame", "rateInds", "contactOrder", "contInd", "contTime" ))
 return(list(df = df))
 }
 
-
+s_info <- sessionInfo()
 saveEnvironment()

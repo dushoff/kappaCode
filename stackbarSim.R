@@ -1,11 +1,8 @@
 library(shellpipes)
-library(ggplot2)
 library(dplyr)
 library(purrr)
-library(patchwork)
 library(deSolve)
 library(tidyr)
-library(shellpipes)
 loadEnvironments()
 
 
@@ -22,5 +19,5 @@ cohorts <- map_dfr(betaList, function(B0){
 )
 
 
-
+s_info <- sessionInfo()
 saveEnvironment()
