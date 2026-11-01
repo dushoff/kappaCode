@@ -5,6 +5,7 @@ library(deSolve)
 library(shellpipes)
 loadEnvironments()
 max_cutoff <- 3.5
+finTime <- 270
 timeStep <- 0.0002
  res_mat <- map_dfr(betaList, function(x){return(data.frame(cohortStatsRcPlot(B0 = x
                                               ,cars=cars
