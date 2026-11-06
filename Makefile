@@ -32,18 +32,14 @@ slowtarget/stackbarSim.Rout: stackbarSim.R params.rda funs.rda
 	$(pipeR)
 stackbar.Rout: stackbar.R params.rda  slow/stackbarSim.rda
 
-
 ## IBM for Histplot
 
 IBM_for_hist.Rout: IBM_for_hist.R funs.rda params.rda
-
 
 slowtarget/IBM_for_histSim.Rout: IBM_for_histSim.R IBM_for_hist.rda params.rda
 	$(pipeR)
 
 rcHist.Rout: slow/IBM_for_histSim.rda params.rda
-
-
 
 ## IBM for SEIR?
 
