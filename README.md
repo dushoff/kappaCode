@@ -45,7 +45,7 @@ remotes::install_github(“dushoff/shellpipes”)
 4. Clone this repository:
 ```bash
 git clone git@github.com:dushoff/kappaCode.git
-cd KappaCode
+cd kappaCode
 ```
 If you're not familiar with *Git*, you can instead click the *Code* button at the top right of the repository's main page and the click *Download ZIP*. Unpack the *ZIP* file and then open a terminal in the extracted folder. If see the *Code* button at the top right of this README, you're already on the right page.
 
@@ -182,6 +182,7 @@ loaded via a namespace (and not attached):
 [13] rlang_1.3.0  
 ```
 </details>
+
 ---
 
 Figure 4:
