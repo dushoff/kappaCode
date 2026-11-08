@@ -16,4 +16,5 @@ print(dens + curve
 	+ plot_annotation(tag_levels = 'a', tag_suffix = ")")
 )
 
+print(sessionInfo())
 
