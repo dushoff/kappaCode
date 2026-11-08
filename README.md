@@ -20,7 +20,8 @@ remotes::install_github(“dushoff/shellpipes”)
 The code is run using  *makefile*. Ensure you have a recent version of gnu make utility installed on your device. 
 
 ## Recreating analysis of Roswell et al:
-To create the figures, you just need to run the command(s) listed below each figure from the local repository root 
+To create the figures, you just need to run the command listed below each figure from the local repository root 
+
 Figure 1:
 > make lsFig.Rout 
 
@@ -34,3 +35,4 @@ Figure 3:
 Figure 4:
 > make CohortPlot.Rout
 
+Other than Figure 1, the figures are reproduced using the corresponding *RData* files in  *slow* directory. The simulations can be rerun, though, by appending *.final* to the commands listed above. Be aware that the simulation for Figure 4 takes a couple of days to complete. 
