@@ -57,9 +57,6 @@ SEIR_RcAverage.Rout: SEIR_RcAverage.R SEIRrcHist.rds
 ## Evolution of variance over time
 slowtarget/RcTimePlotVaryingPeakSim.Rout: RcTimePlotVaryingPeakSim.R params.rda funs.rda
 	$(pipeR)
-# Simulation RcTimePlotVaryingPeakObsSim took so long for timeStep=0.0002, so I ran it on the server
-#slowtarget/RcTimePlotVaryingPeakObsSim.Rout: RcTimePlotVaryingPeakObsSim.R params.rda funs.rda
-#	$(pipeR)
 slowtarget/SimTrunc.Rout: SimTrunc.R params.rda funs.rda
 	$(pipeR)
 
