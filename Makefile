@@ -21,7 +21,7 @@ autopipeR = defined
 ## lsDensity.Rout: lsDensity.R lsDensity.Rlog
 lsDensity.Rout: lsDensity.R realAct.rda
 lsCurves.Rout: lsCurves.R params.rda funs.rda
-
+lsFig.Rout: lsFig.R lsCurves.rds lsDensity.rds
 plot_inequality_curves.R.1.prevfile:
 
 ## Realized activity
