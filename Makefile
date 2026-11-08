@@ -78,6 +78,15 @@ CohortPlot.Rout: CohortPlot.R plotStyle.R slow/CohortSim.rda params.rda
 slowtarget/TimeEvolutionSim.Rout: TimeEvolutionSim.R  params.rda funs.rda
 	$(pipeR)
 TimeEvolutionStack.Rout: TimeEvolutionStack.R plotStyle.R stackbar.rds  slow/TimeEvolutionSim.rda   params.rda funs.rda
+
+## Putting session_info to seesion_info directory
+Ignore += sessionInfo
+sessionInfo:
+	$(mkdir)
+
+%.sessionInfo.Rout: SInfo.R slow/%.rda |sessionInfo
+	$(pipeR)
+
 ## Some helper functions
 ## funs.Rout: funs.R
 
