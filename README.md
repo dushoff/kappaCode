@@ -22,11 +22,15 @@ The code is run using  *makefile*. Ensure you have a recent version of gnu make 
 ## Recreating analysis of Roswell et al:
 To create the figures, you just need to run the command(s) listed below each figure from the local repository root 
 Figure 1:
+
 > make lsFig.Rout 
 Figure 2: 
+
 > make rcHist.Rout
 Figure 3:
+
 > make TimeEvolutionStack.Rout
+
 Figure 4:
 > make CohortPlot.Rout
 
