@@ -17,6 +17,7 @@ The code is written in R v4.5.0; and was developed using libraries  *deSolve*, *
 The code is run using  *makefile*. Ensure you have a recent version of gnu make utility installed on your device. 
 The *Makefile* workflow works smoothly on Mac and Linux machines,
 but not on Windows machine. WSL can be a workaround for Windows users.
+
 We are unsure whether the steps described in the *Recreating analysis of Roswell et al* section will work on a Windows machine. However,
 there is a dependency graph showing which files each figure depends on and the order in which the scripts should be run.
 You can follow this order to reproduce the figures if you're using a Windows machine, or would rather not  use the  *make* utility.
@@ -83,6 +84,7 @@ and then open a terminal in the extracted folder. If you can see the *Code* butt
     ```bash
     make rcHist.Rout
     ```
+    
     <details>
     <summary>R session information for simulation that produced Figure 2 </summary>
 
