@@ -1,8 +1,4 @@
----
-output:
-  html_document: default
-  pdf_document: default
----
+
 # Emergent heterogeneity in compartmental disease models
 
 Secondary-case distributions are widely used to quantify transmission heterogeneity. Here we use analysis and simulation to examine dispersion in secondary case counts across time in the deterministic SIR model and their stochastic realizations using cohorts of infectious individuals. This repository contains R code to reproduce findings in the following manuscript:
