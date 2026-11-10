@@ -130,6 +130,7 @@ and then open a terminal in the extracted folder. If you can see the *Code* butt
     ```bash
     make TimeEvolutionStack.Rout
     ```
+    
     <details>
     <summary>R session information for simulation that produced  Figure 3 </summary>
     ```text
@@ -166,7 +167,7 @@ and then open a terminal in the extracted folder. If you can see the *Code* butt
     ```
     </details>
     
-    ---
+   ---
     
     Figure 4:
     ```bash
